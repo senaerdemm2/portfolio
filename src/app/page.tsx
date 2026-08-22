@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect, useCallback } from "react";
 import {
   Database,
   BarChart3,
@@ -9,17 +9,19 @@ import {
   FileSpreadsheet,
   Brain,
   TrendingUp,
-  ExternalLink,
   Github,
   Linkedin,
   Mail,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Award,
   Target,
   Sparkles,
   ArrowUpRight,
   Menu,
   X,
+  XCircle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,7 +31,25 @@ import { Progress } from "@/components/ui/progress";
 /*  DATA                                                               */
 /* ------------------------------------------------------------------ */
 
-const NAV_ITEMS = ["About", "Skills", "Projects", "Certifications", "Contact"] as const;
+const NAV_ITEMS = ["Tech Stack", "About", "Skills", "Projects", "Certifications", "Contact"] as const;
+
+const TECH_STACK = [
+  { name: "Python", icon: "🐍", category: "Language" },
+  { name: "SQL", icon: "🗃️", category: "Language" },
+  { name: "DAX", icon: "📊", category: "Language" },
+  { name: "Power BI", icon: "📈", category: "Visualization" },
+  { name: "Excel", icon: "📗", category: "Tool" },
+  { name: "Pandas", icon: "🐻", category: "Library" },
+  { name: "NumPy", icon: "🔢", category: "Library" },
+  { name: "SciPy", icon: "🔬", category: "Library" },
+  { name: "Scikit-Learn", icon: "🤖", category: "Library" },
+  { name: "Matplotlib", icon: "📉", category: "Visualization" },
+  { name: "Seaborn", icon: "🎨", category: "Visualization" },
+  { name: "PostgreSQL", icon: "🐘", category: "Database" },
+  { name: "SQL Server", icon: "🗄️", category: "Database" },
+  { name: "Power Query", icon: "🔄", category: "Tool" },
+  { name: "Git", icon: "📦", category: "Tool" },
+];
 
 const SKILL_CATEGORIES = [
   {
@@ -68,6 +88,7 @@ const PROJECTS = [
     github: "https://github.com/senaerdemm2/student-habits-academic-performance-analysis_",
     icon: Target,
     color: "from-emerald-500/20 to-teal-500/20",
+    images: ["/dashboards/student_dashboard.png"],
   },
   {
     title: "Olist E-Commerce Dashboard — SQL + Power BI",
@@ -78,6 +99,7 @@ const PROJECTS = [
     github: "https://github.com/senaerdemm2/olist-ecommerce-analysis",
     icon: BarChart3,
     color: "from-cyan-500/20 to-blue-500/20",
+    images: ["/dashboards/olist_page1.png", "/dashboards/olist_page2.png"],
   },
   {
     title: "FAST-LI Search Data Analysis",
@@ -88,16 +110,24 @@ const PROJECTS = [
     github: "https://github.com/senaerdemm2/fastli-search-data",
     icon: TrendingUp,
     color: "from-amber-500/20 to-orange-500/20",
+    images: [],
   },
   {
     title: "Global Superstore — Power BI Dashboard",
     description:
-      "End-to-end Power BI dashboard analyzing global superstore sales, profitability, and regional performance across multiple markets. Designed for executive-level decision making.",
+      "End-to-end Power BI dashboard analyzing global superstore sales, profitability, and regional performance across multiple markets. Features 5 interactive pages: Overview, Product Analysis, Region Analysis, Customer Analysis, and Drillthrough.",
     tech: ["Power BI", "DAX", "Power Query"],
-    highlights: ["Multi-market analysis", "Executive dashboard", "Profitability insights"],
+    highlights: ["5 interactive pages", "Multi-market analysis", "Executive dashboard"],
     github: "https://github.com/senaerdemm2/Global-Superstore-Power-BI-Project",
     icon: Database,
     color: "from-violet-500/20 to-purple-500/20",
+    images: [
+      "/dashboards/global_overview.png",
+      "/dashboards/global_product.png",
+      "/dashboards/global_region.png",
+      "/dashboards/global_customer.png",
+      "/dashboards/global_drillthrough.png",
+    ],
   },
   {
     title: "Remote Work Health Impact — EDA",
@@ -108,6 +138,7 @@ const PROJECTS = [
     github: "https://github.com/senaerdemm2/remote-work-health-analysis",
     icon: Brain,
     color: "from-rose-500/20 to-pink-500/20",
+    images: [],
   },
   {
     title: "Power BI Sales Dashboard",
@@ -118,6 +149,7 @@ const PROJECTS = [
     github: "https://github.com/senaerdemm2/powerBI_sales_dashboard",
     icon: BarChart3,
     color: "from-sky-500/20 to-indigo-500/20",
+    images: [],
   },
 ];
 
@@ -187,6 +219,109 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
 }
 
 /* ------------------------------------------------------------------ */
+/*  DASHBOARD IMAGE CAROUSEL                                           */
+/* ------------------------------------------------------------------ */
+
+function DashboardCarousel({ images }: { images: string[] }) {
+  const [current, setCurrent] = useState(0);
+  const [lightbox, setLightbox] = useState(false);
+
+  const next = useCallback(() => setCurrent((i) => (i + 1) % images.length), [images.length]);
+  const prev = useCallback(() => setCurrent((i) => (i - 1 + images.length) % images.length), [images.length]);
+
+  if (!images || images.length === 0) return null;
+
+  return (
+    <>
+      {/* Thumbnail strip */}
+      <div className="mt-5 relative">
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          {images.map((img, i) => (
+            <button
+              key={img}
+              onClick={() => { setCurrent(i); setLightbox(true); }}
+              className={`shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:border-primary/50 ${
+                i === current && !lightbox ? "border-primary" : "border-border/50"
+              }`}
+            >
+              <img
+                src={img}
+                alt={`Dashboard ${i + 1}`}
+                className="w-48 h-28 sm:w-56 sm:h-32 object-cover object-top"
+              />
+            </button>
+          ))}
+        </div>
+        <p className="text-[11px] text-muted-foreground/60 mt-2">
+          Click to enlarge
+        </p>
+      </div>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightbox && images.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setLightbox(false)}
+          >
+            {/* Close button */}
+            <button
+              className="absolute top-4 right-4 text-white/70 hover:text-white z-10"
+              onClick={() => setLightbox(false)}
+            >
+              <XCircle className="h-8 w-8" />
+            </button>
+
+            {/* Nav arrows */}
+            {images.length > 1 && (
+              <>
+                <button
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white z-10"
+                  onClick={(e) => { e.stopPropagation(); prev(); }}
+                >
+                  <ChevronLeft className="h-10 w-10" />
+                </button>
+                <button
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white z-10"
+                  onClick={(e) => { e.stopPropagation(); next(); }}
+                >
+                  <ChevronRight className="h-10 w-10" />
+                </button>
+              </>
+            )}
+
+            {/* Image counter */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/50 text-sm">
+              {current + 1} / {images.length}
+            </div>
+
+            {/* Image */}
+            <motion.div
+              key={current}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="max-w-[90vw] max-h-[85vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={images[current]}
+                alt={`Dashboard ${current + 1}`}
+                className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  SECTION WRAPPER                                                    */
 /* ------------------------------------------------------------------ */
 
@@ -245,20 +380,16 @@ function Navigation() {
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <a
-          href="#hero"
-          className="text-lg font-bold tracking-tight"
-        >
+        <a href="#hero" className="text-lg font-bold tracking-tight">
           <span className="text-primary">SE</span>
           <span className="text-muted-foreground font-light ml-1 text-sm hidden sm:inline">Sena Erdem</span>
         </a>
 
-        {/* Desktop */}
         <ul className="hidden md:flex items-center gap-1">
           {NAV_ITEMS.map((item) => (
             <li key={item}>
               <a
-                href={`#${item.toLowerCase()}`}
+                href={`#${item.toLowerCase().replace(/ /g, "-")}`}
                 className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary"
               >
                 {item}
@@ -285,7 +416,6 @@ function Navigation() {
           </a>
         </div>
 
-        {/* Mobile toggle */}
         <Button
           variant="ghost"
           size="icon"
@@ -296,7 +426,6 @@ function Navigation() {
         </Button>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
@@ -308,7 +437,7 @@ function Navigation() {
             {NAV_ITEMS.map((item) => (
               <li key={item}>
                 <a
-                  href={`#${item.toLowerCase()}`}
+                  href={`#${item.toLowerCase().replace(/ /g, "-")}`}
                   onClick={() => setMobileOpen(false)}
                   className="block px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary"
                 >
@@ -345,7 +474,6 @@ function Hero() {
       id="hero"
       className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 overflow-hidden"
     >
-      {/* Background glow */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/8 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent" />
@@ -366,10 +494,28 @@ function Hero() {
           </Badge>
         </motion.div>
 
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+          className="mb-8 flex justify-center"
+        >
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/40 to-teal-500/40 rounded-full blur-md scale-110" />
+            <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-primary/30 shadow-xl shadow-primary/10">
+              <img
+                src="/profile.jpg"
+                alt="Sena Erdem"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </motion.div>
+
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
         >
           Hi, I{"'"}m{" "}
@@ -381,7 +527,7 @@ function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
           className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
         >
           Junior Data Analyst based in{" "}
@@ -394,7 +540,7 @@ function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.45, ease: "easeOut" }}
+          transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
           <a href="#projects">
@@ -415,11 +561,10 @@ function Hero() {
           </a>
         </motion.div>
 
-        {/* Stats */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.8, delay: 0.65, ease: "easeOut" }}
           className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl mx-auto"
         >
           {STATS.map((stat) => (
@@ -435,7 +580,6 @@ function Hero() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -450,6 +594,63 @@ function Hero() {
         </motion.div>
       </motion.div>
     </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  TECH STACK (GitHub README Style)                                   */
+/* ------------------------------------------------------------------ */
+
+function TechStack() {
+  const categories = Array.from(new Set(TECH_STACK.map((t) => t.category)));
+
+  return (
+    <Section id="tech-stack">
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-8 h-1 bg-primary rounded-full" />
+        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+          Tech Stack
+        </span>
+      </div>
+      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+        Tools & Technologies
+      </h2>
+      <p className="text-muted-foreground max-w-2xl mb-10 leading-relaxed">
+        The tools, languages, and libraries I use daily to analyze data and build dashboards.
+      </p>
+
+      <div className="space-y-6">
+        {categories.map((cat, ci) => (
+          <motion.div
+            key={cat}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.5, delay: ci * 0.1 }}
+          >
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-3">
+              {cat}
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {TECH_STACK.filter((t) => t.category === cat).map((tech, ti) => (
+                <motion.div
+                  key={tech.name}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: ci * 0.1 + ti * 0.04 }}
+                  whileHover={{ y: -2, scale: 1.05 }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card/60 hover:border-primary/30 hover:bg-card transition-all duration-200 cursor-default"
+                >
+                  <span className="text-base">{tech.icon}</span>
+                  <span className="text-sm font-medium">{tech.name}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </Section>
   );
 }
 
@@ -532,7 +733,7 @@ function Skills() {
         </span>
       </div>
       <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-        Technical Toolkit
+        Proficiency Levels
       </h2>
       <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
         A comprehensive set of tools and methodologies I use to transform raw data
@@ -559,10 +760,7 @@ function Skills() {
                     <span className="text-muted-foreground">{skill.name}</span>
                     <span className="text-primary font-semibold tabular-nums">{skill.level}%</span>
                   </div>
-                  <Progress
-                    value={skill.level}
-                    className="h-2 bg-secondary"
-                  />
+                  <Progress value={skill.level} className="h-2 bg-secondary" />
                 </div>
               ))}
             </div>
@@ -606,7 +804,6 @@ function Projects() {
           >
             <div className="p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row sm:items-start gap-5">
-                {/* Icon */}
                 <div
                   className={`shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${project.color} flex items-center justify-center border border-border/50`}
                 >
@@ -614,7 +811,6 @@ function Projects() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  {/* Title + link */}
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <h3 className="text-lg font-bold leading-snug group-hover:text-primary transition-colors">
                       {project.title}
@@ -630,12 +826,10 @@ function Projects() {
                     </a>
                   </div>
 
-                  {/* Description */}
                   <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                     {project.description}
                   </p>
 
-                  {/* Highlights */}
                   <div className="flex flex-wrap gap-2 mb-4">
                     {project.highlights.map((h) => (
                       <span
@@ -647,20 +841,20 @@ function Projects() {
                     ))}
                   </div>
 
-                  {/* Tech stack */}
                   <div className="flex flex-wrap gap-1.5">
                     {project.tech.map((t) => (
-                      <Badge
-                        key={t}
-                        variant="secondary"
-                        className="text-xs font-normal"
-                      >
+                      <Badge key={t} variant="secondary" className="text-xs font-normal">
                         {t}
                       </Badge>
                     ))}
                   </div>
                 </div>
               </div>
+
+              {/* Dashboard screenshots */}
+              {project.images.length > 0 && (
+                <DashboardCarousel images={project.images} />
+              )}
             </div>
           </motion.div>
         ))}
@@ -779,7 +973,7 @@ function Contact() {
         </a>
 
         <a
-          href="mailto:senaerdem.contact@gmail.com"
+          href="mailto:sena.erdem.pl@gmail.com"
           className="group flex flex-col items-center gap-3 rounded-xl border border-border bg-card/50 p-6 hover:border-primary/20 hover:bg-card/80 transition-all duration-300"
         >
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
@@ -787,7 +981,7 @@ function Contact() {
           </div>
           <div className="text-center">
             <div className="font-semibold text-sm">Email</div>
-            <div className="text-xs text-muted-foreground mt-1">senaerdem.contact@gmail.com</div>
+            <div className="text-xs text-muted-foreground mt-1">sena.erdem.pl@gmail.com</div>
           </div>
         </a>
       </div>
@@ -804,7 +998,7 @@ function Footer() {
     <footer className="border-t border-border py-8 px-4 mt-auto">
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Sena Erdem. Built with Next.js & Tailwind CSS.
+          &copy; {new Date().getFullYear()} Sena Erdem. Built with Next.js & Tailwind CSS.
         </div>
         <div className="flex items-center gap-3">
           <a href="https://github.com/senaerdemm2" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -829,6 +1023,7 @@ export default function PortfolioPage() {
       <Navigation />
       <main className="flex-1">
         <Hero />
+        <TechStack />
         <About />
         <Skills />
         <Projects />
