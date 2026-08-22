@@ -80,12 +80,12 @@ const PROJECTS = [
     color: "from-cyan-500/20 to-blue-500/20",
   },
   {
-    title: "Google Ads Campaign Analysis — End-to-End",
+    title: "FAST-LI Search Data Analysis",
     description:
-      "Full-stack data analytics pipeline: Excel → SQL Server → Python → Power BI. Analyzed campaign efficiency, conversion performance, and ROAS. Key findings: Overall CTR 3.00%, Conversion Rate 4.76%, ROAS 6.85×.",
-    tech: ["Excel", "SQL Server", "Python", "Pandas", "Power BI"],
-    highlights: ["ROAS 6.85×", "CTR 3.00%", "Full ETL pipeline"],
-    github: "https://github.com/senaerdemm2/Global-Superstore-Power-BI-Project",
+      "Explored and analyzed the FAST-LI search dataset using Jupyter Notebooks. Performed data exploration, preprocessing, and visualization to uncover patterns and insights from the search data.",
+    tech: ["Python", "Jupyter Notebook", "Pandas", "Matplotlib"],
+    highlights: ["Jupyter Notebook", "Data exploration", "Visualization"],
+    github: "https://github.com/senaerdemm2/fastli-search-data",
     icon: TrendingUp,
     color: "from-amber-500/20 to-orange-500/20",
   },

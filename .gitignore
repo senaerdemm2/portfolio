@@ -51,4 +51,10 @@ prompt
 
 server.log
 # Skills directory
-/skills/
+/skills/tool-results/
+linkedin_profile.json
+github_profile.json
+download/
+scripts/
+worklog.md
+.zscripts/

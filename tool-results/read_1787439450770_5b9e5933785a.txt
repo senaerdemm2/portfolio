@@ -1,0 +1,755 @@
+    88→    github: "https://github.com/senaerdemm2/Global-Superstore-Power-BI-Project",
+    89→    icon: TrendingUp,
+    90→    color: "from-amber-500/20 to-orange-500/20",
+    91→  },
+    92→  {
+    93→    title: "Global Superstore — Power BI Dashboard",
+    94→    description:
+    95→      "End-to-end Power BI dashboard analyzing global superstore sales, profitability, and regional performance across multiple markets. Designed for executive-level decision making.",
+    96→    tech: ["Power BI", "DAX", "Power Query"],
+    97→    highlights: ["Multi-market analysis", "Executive dashboard", "Profitability insights"],
+    98→    github: "https://github.com/senaerdemm2/Global-Superstore-Power-BI-Project",
+    99→    icon: Database,
+   100→    color: "from-violet-500/20 to-purple-500/20",
+   101→  },
+   102→  {
+   103→    title: "Remote Work Health Impact — EDA",
+   104→    description:
+   105→      "Comprehensive exploratory data analysis on post-pandemic remote work health impact (2025) with statistical validation. Investigated correlations between remote work patterns and employee wellbeing metrics.",
+   106→    tech: ["Python", "Pandas", "Matplotlib", "Seaborn"],
+   107→    highlights: ["Statistical validation", "2025 dataset", "Health & wellbeing focus"],
+   108→    github: "https://github.com/senaerdemm2/remote-work-health-analysis",
+   109→    icon: Brain,
+   110→    color: "from-rose-500/20 to-pink-500/20",
+   111→  },
+   112→  {
+   113→    title: "Power BI Sales Dashboard",
+   114→    description:
+   115→      "Dynamic sales dashboard built with Power BI, featuring interactive KPIs, trend analysis, and drill-down capabilities for tracking business performance metrics.",
+   116→    tech: ["Power BI", "DAX", "SQL"],
+   117→    highlights: ["Interactive KPIs", "Trend analysis", "Drill-down reports"],
+   118→    github: "https://github.com/senaerdemm2/powerBI_sales_dashboard",
+   119→    icon: BarChart3,
+   120→    color: "from-sky-500/20 to-indigo-500/20",
+   121→  },
+   122→];
+   123→
+   124→const CERTIFICATIONS = [
+   125→  {
+   126→    title: "SQL (Advanced)",
+   127→    issuer: "HackerRank",
+   128→    date: "Jul 2026",
+   129→    credentialId: "1586C7F75F01",
+   130→  },
+   131→  {
+   132→    title: "SQL (Intermediate)",
+   133→    issuer: "HackerRank",
+   134→    date: "Jul 2026",
+   135→    credentialId: "4BC02786182F",
+   136→  },
+   137→  {
+   138→    title: "SQL (Basic)",
+   139→    issuer: "HackerRank",
+   140→    date: "Jul 2026",
+   141→    credentialId: "194DEE78A8D1",
+   142→  },
+   143→  {
+   144→    title: "B356-357 Data Analysis Certificate",
+   145→    issuer: "TechPro Education",
+   146→    date: "Nov 2025",
+   147→    credentialId: "4634541267SE",
+   148→  },
+   149→];
+   150→
+   151→const STATS = [
+   152→  { value: 6, label: "Projects", suffix: "" },
+   153→  { value: 4, label: "Certifications", suffix: "" },
+   154→  { value: 99, label: "K+ Rows Analyzed", suffix: "" },
+   155→  { value: 5, label: "Core Tools", suffix: "+" },
+   156→];
+   157→
+   158→/* ------------------------------------------------------------------ */
+   159→/*  ANIMATED COUNTER                                                   */
+   160→/* ------------------------------------------------------------------ */
+   161→
+   162→function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
+   163→  const [count, setCount] = useState(0);
+   164→  const ref = useRef<HTMLSpanElement>(null);
+   165→  const inView = useInView(ref, { once: true, margin: "-50px" });
+   166→
+   167→  useEffect(() => {
+   168→    if (!inView) return;
+   169→    let start = 0;
+   170→    const duration = 2000;
+   171→    const step = (timestamp: number) => {
+   172→      if (!start) start = timestamp;
+   173→      const progress = Math.min((timestamp - start) / duration, 1);
+   174→      const eased = 1 - Math.pow(1 - progress, 3);
+   175→      setCount(Math.floor(eased * target));
+   176→      if (progress < 1) requestAnimationFrame(step);
+   177→    };
+   178→    requestAnimationFrame(step);
+   179→  }, [inView, target]);
+   180→
+   181→  return (
+   182→    <span ref={ref} className="tabular-nums">
+   183→      {count}
+   184→      {suffix}
+   185→    </span>
+   186→  );
+   187→}
+   188→
+   189→/* ------------------------------------------------------------------ */
+   190→/*  SECTION WRAPPER                                                    */
+   191→/* ------------------------------------------------------------------ */
+   192→
+   193→function Section({
+   194→  id,
+   195→  children,
+   196→  className = "",
+   197→}: {
+   198→  id: string;
+   199→  children: React.ReactNode;
+   200→  className?: string;
+   201→}) {
+   202→  const ref = useRef<HTMLElement>(null);
+   203→  const inView = useInView(ref, { once: true, margin: "-80px" });
+   204→
+   205→  return (
+   206→    <section
+   207→      id={id}
+   208→      ref={ref}
+   209→      className={`py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto ${className}`}
+   210→    >
+   211→      <motion.div
+   212→        initial={{ opacity: 0, y: 40 }}
+   213→        animate={inView ? { opacity: 1, y: 0 } : {}}
+   214→        transition={{ duration: 0.7, ease: "easeOut" }}
+   215→      >
+   216→        {children}
+   217→      </motion.div>
+   218→    </section>
+   219→  );
+   220→}
+   221→
+   222→/* ------------------------------------------------------------------ */
+   223→/*  NAVIGATION                                                         */
+   224→/* ------------------------------------------------------------------ */
+   225→
+   226→function Navigation() {
+   227→  const [scrolled, setScrolled] = useState(false);
+   228→  const [mobileOpen, setMobileOpen] = useState(false);
+   229→
+   230→  useEffect(() => {
+   231→    const handler = () => setScrolled(window.scrollY > 40);
+   232→    window.addEventListener("scroll", handler, { passive: true });
+   233→    return () => window.removeEventListener("scroll", handler);
+   234→  }, []);
+   235→
+   236→  return (
+   237→    <motion.nav
+   238→      initial={{ y: -80 }}
+   239→      animate={{ y: 0 }}
+   240→      transition={{ duration: 0.6, ease: "easeOut" }}
+   241→      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+   242→        scrolled
+   243→          ? "bg-background/80 backdrop-blur-xl border-b border-border shadow-lg shadow-black/10"
+   244→          : "bg-transparent"
+   245→      }`}
+   246→    >
+   247→      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+   248→        <a
+   249→          href="#hero"
+   250→          className="text-lg font-bold tracking-tight"
+   251→        >
+   252→          <span className="text-primary">SE</span>
+   253→          <span className="text-muted-foreground font-light ml-1 text-sm hidden sm:inline">Sena Erdem</span>
+   254→        </a>
+   255→
+   256→        {/* Desktop */}
+   257→        <ul className="hidden md:flex items-center gap-1">
+   258→          {NAV_ITEMS.map((item) => (
+   259→            <li key={item}>
+   260→              <a
+   261→                href={`#${item.toLowerCase()}`}
+   262→                className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary"
+   263→              >
+   264→                {item}
+   265→              </a>
+   266→            </li>
+   267→          ))}
+   268→        </ul>
+   269→
+   270→        <div className="hidden md:flex items-center gap-2">
+   271→          <a href="https://github.com/senaerdemm2" target="_blank" rel="noopener noreferrer">
+   272→            <Button variant="ghost" size="icon" className="h-9 w-9">
+   273→              <Github className="h-4 w-4" />
+   274→            </Button>
+   275→          </a>
+   276→          <a href="https://www.linkedin.com/in/sena-erdem-a64b91345/" target="_blank" rel="noopener noreferrer">
+   277→            <Button variant="ghost" size="icon" className="h-9 w-9">
+   278→              <Linkedin className="h-4 w-4" />
+   279→            </Button>
+   280→          </a>
+   281→          <a href="#contact">
+   282→            <Button size="sm" className="rounded-full px-5">
+   283→              Hire Me
+   284→            </Button>
+   285→          </a>
+   286→        </div>
+   287→
+   288→        {/* Mobile toggle */}
+   289→        <Button
+   290→          variant="ghost"
+   291→          size="icon"
+   292→          className="md:hidden h-9 w-9"
+   293→          onClick={() => setMobileOpen(!mobileOpen)}
+   294→        >
+   295→          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+   296→        </Button>
+   297→      </div>
+   298→
+   299→      {/* Mobile menu */}
+   300→      {mobileOpen && (
+   301→        <motion.div
+   302→          initial={{ opacity: 0, height: 0 }}
+   303→          animate={{ opacity: 1, height: "auto" }}
+   304→          exit={{ opacity: 0, height: 0 }}
+   305→          className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border"
+   306→        >
+   307→          <ul className="flex flex-col px-4 py-4 gap-1">
+   308→            {NAV_ITEMS.map((item) => (
+   309→              <li key={item}>
+   310→                <a
+   311→                  href={`#${item.toLowerCase()}`}
+   312→                  onClick={() => setMobileOpen(false)}
+   313→                  className="block px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary"
+   314→                >
+   315→                  {item}
+   316→                </a>
+   317→              </li>
+   318→            ))}
+   319→            <li className="flex gap-2 mt-3 pt-3 border-t border-border">
+   320→              <a href="https://github.com/senaerdemm2" target="_blank" rel="noopener noreferrer">
+   321→                <Button variant="ghost" size="icon" className="h-9 w-9">
+   322→                  <Github className="h-4 w-4" />
+   323→                </Button>
+   324→              </a>
+   325→              <a href="https://www.linkedin.com/in/sena-erdem-a64b91345/" target="_blank" rel="noopener noreferrer">
+   326→                <Button variant="ghost" size="icon" className="h-9 w-9">
+   327→                  <Linkedin className="h-4 w-4" />
+   328→                </Button>
+   329→              </a>
+   330→            </li>
+   331→          </ul>
+   332→        </motion.div>
+   333→      )}
+   334→    </motion.nav>
+   335→  );
+   336→}
+   337→
+   338→/* ------------------------------------------------------------------ */
+   339→/*  HERO                                                               */
+   340→/* ------------------------------------------------------------------ */
+   341→
+   342→function Hero() {
+   343→  return (
+   344→    <section
+   345→      id="hero"
+   346→      className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 overflow-hidden"
+   347→    >
+   348→      {/* Background glow */}
+   349→      <div className="absolute inset-0 -z-10">
+   350→        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/8 rounded-full blur-[120px]" />
+   351→        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent" />
+   352→      </div>
+   353→
+   354→      <div className="max-w-4xl mx-auto text-center">
+   355→        <motion.div
+   356→          initial={{ opacity: 0, y: 30 }}
+   357→          animate={{ opacity: 1, y: 0 }}
+   358→          transition={{ duration: 0.8, ease: "easeOut" }}
+   359→        >
+   360→          <Badge
+   361→            variant="secondary"
+   362→            className="mb-6 px-4 py-1.5 text-xs font-medium tracking-wide uppercase"
+   363→          >
+   364→            <Sparkles className="h-3 w-3 mr-1.5 text-primary" />
+   365→            Open to Opportunities
+   366→          </Badge>
+   367→        </motion.div>
+   368→
+   369→        <motion.h1
+   370→          initial={{ opacity: 0, y: 30 }}
+   371→          animate={{ opacity: 1, y: 0 }}
+   372→          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
+   373→          className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
+   374→        >
+   375→          Hi, I{"'"}m{" "}
+   376→          <span className="bg-gradient-to-r from-primary via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+   377→            Sena Erdem
+   378→          </span>
+   379→        </motion.h1>
+   380→
+   381→        <motion.p
+   382→          initial={{ opacity: 0, y: 30 }}
+   383→          animate={{ opacity: 1, y: 0 }}
+   384→          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+   385→          className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+   386→        >
+   387→          Junior Data Analyst based in{" "}
+   388→          <span className="text-foreground font-medium">Warsaw, Poland</span>.{" "}
+   389→          I turn raw data into{" "}
+   390→          <span className="text-primary font-medium">actionable business insights</span>{" "}
+   391→          using Python, SQL, and Power BI.
+   392→        </motion.p>
+   393→
+   394→        <motion.div
+   395→          initial={{ opacity: 0, y: 30 }}
+   396→          animate={{ opacity: 1, y: 0 }}
+   397→          transition={{ duration: 0.8, delay: 0.45, ease: "easeOut" }}
+   398→          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+   399→        >
+   400→          <a href="#projects">
+   401→            <Button size="lg" className="rounded-full px-8 h-12 text-sm font-semibold">
+   402→              View My Projects
+   403→              <ArrowUpRight className="ml-2 h-4 w-4" />
+   404→            </Button>
+   405→          </a>
+   406→          <a href="https://www.linkedin.com/in/sena-erdem-a64b91345/" target="_blank" rel="noopener noreferrer">
+   407→            <Button
+   408→              variant="outline"
+   409→              size="lg"
+   410→              className="rounded-full px-8 h-12 text-sm font-semibold"
+   411→            >
+   412→              <Linkedin className="mr-2 h-4 w-4" />
+   413→              LinkedIn Profile
+   414→            </Button>
+   415→          </a>
+   416→        </motion.div>
+   417→
+   418→        {/* Stats */}
+   419→        <motion.div
+   420→          initial={{ opacity: 0, y: 30 }}
+   421→          animate={{ opacity: 1, y: 0 }}
+   422→          transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+   423→          className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl mx-auto"
+   424→        >
+   425→          {STATS.map((stat) => (
+   426→            <div key={stat.label} className="text-center">
+   427→              <div className="text-2xl sm:text-3xl font-bold text-primary">
+   428→                <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+   429→              </div>
+   430→              <div className="text-xs sm:text-sm text-muted-foreground mt-1">
+   431→                {stat.label}
+   432→              </div>
+   433→            </div>
+   434→          ))}
+   435→        </motion.div>
+   436→      </div>
+   437→
+   438→      {/* Scroll indicator */}
+   439→      <motion.div
+   440→        initial={{ opacity: 0 }}
+   441→        animate={{ opacity: 1 }}
+   442→        transition={{ delay: 1.2, duration: 1 }}
+   443→        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+   444→      >
+   445→        <motion.div
+   446→          animate={{ y: [0, 8, 0] }}
+   447→          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+   448→        >
+   449→          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+   450→        </motion.div>
+   451→      </motion.div>
+   452→    </section>
+   453→  );
+   454→}
+   455→
+   456→/* ------------------------------------------------------------------ */
+   457→/*  ABOUT                                                              */
+   458→/* ------------------------------------------------------------------ */
+   459→
+   460→function About() {
+   461→  return (
+   462→    <Section id="about">
+   463→      <div className="flex items-center gap-3 mb-2">
+   464→        <div className="w-8 h-1 bg-primary rounded-full" />
+   465→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+   466→          About Me
+   467→        </span>
+   468→      </div>
+   469→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-8">
+   470→        Bridging the Gap Between{" "}
+   471→        <span className="text-primary">Data</span> and{" "}
+   472→        <span className="text-primary">Decisions</span>
+   473→      </h2>
+   474→
+   475→      <div className="grid md:grid-cols-2 gap-10 items-start">
+   476→        <div className="space-y-5 text-muted-foreground leading-relaxed">
+   477→          <p>
+   478→            I{"'"}m a Computer Engineering graduate with a passion for uncovering
+   479→            stories hidden in data. My journey into data analytics began with a
+   480→            simple curiosity: how can numbers guide better business decisions?
+   481→            That question has since driven every project I{"'"}ve built.
+   482→          </p>
+   483→          <p>
+   484→            I specialize in end-to-end data analytics workflows — from extracting
+   485→            and cleaning raw data with SQL and Python, through exploratory analysis
+   486→            and statistical testing, to building interactive dashboards in Power BI
+   487→            that non-technical stakeholders can actually use.
+   488→          </p>
+   489→          <p>
+   490→            Whether it{"'"}s identifying which student support programs deliver real
+   491→            ROI, analyzing e-commerce revenue patterns, or evaluating Google Ads
+   492→            campaign performance, I bring a rigorous, hypothesis-driven approach
+   493→            to every dataset I touch.
+   494→          </p>
+   495→        </div>
+   496→
+   497→        <div className="space-y-4">
+   498→          <div className="grid grid-cols-2 gap-3">
+   499→            {[
+   500→              { icon: Code2, label: "Python", desc: "Pandas, NumPy, SciPy, Scikit-Learn" },
+   501→              { icon: Database, label: "SQL", desc: "PostgreSQL, SQL Server, CTEs, Window Fns" },
+   502→              { icon: BarChart3, label: "Power BI", desc: "DAX, Power Query, Dashboards" },
+   503→              { icon: FileSpreadsheet, label: "Excel", desc: "Pivot Tables, Power Query, XLOOKUP" },
+   504→            ].map((item) => (
+   505→              <div
+   506→                key={item.label}
+   507→                className="rounded-xl border border-border bg-card/50 p-4 hover:border-primary/30 transition-colors"
+   508→              >
+   509→                <item.icon className="h-5 w-5 text-primary mb-2" />
+   510→                <div className="font-semibold text-sm">{item.label}</div>
+   511→                <div className="text-xs text-muted-foreground mt-1">{item.desc}</div>
+   512→              </div>
+   513→            ))}
+   514→          </div>
+   515→        </div>
+   516→      </div>
+   517→    </Section>
+   518→  );
+   519→}
+   520→
+   521→/* ------------------------------------------------------------------ */
+   522→/*  SKILLS                                                             */
+   523→/* ------------------------------------------------------------------ */
+   524→
+   525→function Skills() {
+   526→  return (
+   527→    <Section id="skills">
+   528→      <div className="flex items-center gap-3 mb-2">
+   529→        <div className="w-8 h-1 bg-primary rounded-full" />
+   530→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+   531→          Skills
+   532→        </span>
+   533→      </div>
+   534→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   535→        Technical Toolkit
+   536→      </h2>
+   537→      <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
+   538→        A comprehensive set of tools and methodologies I use to transform raw data
+   539→        into clear, actionable business insights.
+   540→      </p>
+   541→
+   542→      <div className="grid md:grid-cols-3 gap-8">
+   543→        {SKILL_CATEGORIES.map((cat, ci) => (
+   544→          <motion.div
+   545→            key={cat.title}
+   546→            initial={{ opacity: 0, y: 30 }}
+   547→            whileInView={{ opacity: 1, y: 0 }}
+   548→            viewport={{ once: true, margin: "-60px" }}
+   549→            transition={{ duration: 0.6, delay: ci * 0.15 }}
+   550→            className="rounded-2xl border border-border bg-card/50 p-6 hover:border-primary/20 transition-colors"
+   551→          >
+   552→            <h3 className="font-semibold text-sm mb-6 text-foreground/90">
+   553→              {cat.title}
+   554→            </h3>
+   555→            <div className="space-y-5">
+   556→              {cat.skills.map((skill) => (
+   557→                <div key={skill.name}>
+   558→                  <div className="flex justify-between text-sm mb-2">
+   559→                    <span className="text-muted-foreground">{skill.name}</span>
+   560→                    <span className="text-primary font-semibold tabular-nums">{skill.level}%</span>
+   561→                  </div>
+   562→                  <Progress
+   563→                    value={skill.level}
+   564→                    className="h-2 bg-secondary"
+   565→                  />
+   566→                </div>
+   567→              ))}
+   568→            </div>
+   569→          </motion.div>
+   570→        ))}
+   571→      </div>
+   572→    </Section>
+   573→  );
+   574→}
+   575→
+   576→/* ------------------------------------------------------------------ */
+   577→/*  PROJECTS                                                           */
+   578→/* ------------------------------------------------------------------ */
+   579→
+   580→function Projects() {
+   581→  return (
+   582→    <Section id="projects">
+   583→      <div className="flex items-center gap-3 mb-2">
+   584→        <div className="w-8 h-1 bg-primary rounded-full" />
+   585→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+   586→          Projects
+   587→        </span>
+   588→      </div>
+   589→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   590→        Featured Work
+   591→      </h2>
+   592→      <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
+   593→        Each project follows a rigorous, end-to-end analytics workflow — from data
+   594→        collection and cleaning through statistical analysis to interactive visualization.
+   595→      </p>
+   596→
+   597→      <div className="grid gap-6">
+   598→        {PROJECTS.map((project, i) => (
+   599→          <motion.div
+   600→            key={project.title}
+   601→            initial={{ opacity: 0, y: 30 }}
+   602→            whileInView={{ opacity: 1, y: 0 }}
+   603→            viewport={{ once: true, margin: "-40px" }}
+   604→            transition={{ duration: 0.6, delay: i * 0.1 }}
+   605→            className="group rounded-2xl border border-border bg-card/50 hover:border-primary/20 transition-all duration-300 overflow-hidden"
+   606→          >
+   607→            <div className="p-6 sm:p-8">
+   608→              <div className="flex flex-col sm:flex-row sm:items-start gap-5">
+   609→                {/* Icon */}
+   610→                <div
+   611→                  className={`shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${project.color} flex items-center justify-center border border-border/50`}
+   612→                >
+   613→                  <project.icon className="h-5 w-5 text-foreground" />
+   614→                </div>
+   615→
+   616→                <div className="flex-1 min-w-0">
+   617→                  {/* Title + link */}
+   618→                  <div className="flex items-start justify-between gap-3 mb-3">
+   619→                    <h3 className="text-lg font-bold leading-snug group-hover:text-primary transition-colors">
+   620→                      {project.title}
+   621→                    </h3>
+   622→                    <a
+   623→                      href={project.github}
+   624→                      target="_blank"
+   625→                      rel="noopener noreferrer"
+   626→                      className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
+   627→                      aria-label={`View ${project.title} on GitHub`}
+   628→                    >
+   629→                      <Github className="h-5 w-5" />
+   630→                    </a>
+   631→                  </div>
+   632→
+   633→                  {/* Description */}
+   634→                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+   635→                    {project.description}
+   636→                  </p>
+   637→
+   638→                  {/* Highlights */}
+   639→                  <div className="flex flex-wrap gap-2 mb-4">
+   640→                    {project.highlights.map((h) => (
+   641→                      <span
+   642→                        key={h}
+   643→                        className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20"
+   644→                      >
+   645→                        {h}
+   646→                      </span>
+   647→                    ))}
+   648→                  </div>
+   649→
+   650→                  {/* Tech stack */}
+   651→                  <div className="flex flex-wrap gap-1.5">
+   652→                    {project.tech.map((t) => (
+   653→                      <Badge
+   654→                        key={t}
+   655→                        variant="secondary"
+   656→                        className="text-xs font-normal"
+   657→                      >
+   658→                        {t}
+   659→                      </Badge>
+   660→                    ))}
+   661→                  </div>
+   662→                </div>
+   663→              </div>
+   664→            </div>
+   665→          </motion.div>
+   666→        ))}
+   667→      </div>
+   668→    </Section>
+   669→  );
+   670→}
+   671→
+   672→/* ------------------------------------------------------------------ */
+   673→/*  CERTIFICATIONS                                                     */
+   674→/* ------------------------------------------------------------------ */
+   675→
+   676→function Certifications() {
+   677→  return (
+   678→    <Section id="certifications">
+   679→      <div className="flex items-center gap-3 mb-2">
+   680→        <div className="w-8 h-1 bg-primary rounded-full" />
+   681→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+   682→          Certifications
+   683→        </span>
+   684→      </div>
+   685→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   686→        Credentials
+   687→      </h2>
+   688→      <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
+   689→        Continuously validating and expanding my technical skills through
+   690→        industry-recognized certifications.
+   691→      </p>
+   692→
+   693→      <div className="grid sm:grid-cols-2 gap-4">
+   694→        {CERTIFICATIONS.map((cert, i) => (
+   695→          <motion.div
+   696→            key={cert.credentialId}
+   697→            initial={{ opacity: 0, y: 20 }}
+   698→            whileInView={{ opacity: 1, y: 0 }}
+   699→            viewport={{ once: true, margin: "-40px" }}
+   700→            transition={{ duration: 0.5, delay: i * 0.1 }}
+   701→            className="group rounded-xl border border-border bg-card/50 p-5 hover:border-primary/20 transition-all duration-300"
+   702→          >
+   703→            <div className="flex items-start gap-4">
+   704→              <div className="shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+   705→                <Award className="h-5 w-5 text-primary" />
+   706→              </div>
+   707→              <div className="flex-1 min-w-0">
+   708→                <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">
+   709→                  {cert.title}
+   710→                </h3>
+   711→                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+   712→                  <span>{cert.issuer}</span>
+   713→                  <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+   714→                  <span>{cert.date}</span>
+   715→                </div>
+   716→                <div className="text-[11px] text-muted-foreground/60 mt-1.5 font-mono">
+   717→                  ID: {cert.credentialId}
+   718→                </div>
+   719→              </div>
+   720→            </div>
+   721→          </motion.div>
+   722→        ))}
+   723→      </div>
+   724→    </Section>
+   725→  );
+   726→}
+   727→
+   728→/* ------------------------------------------------------------------ */
+   729→/*  CONTACT                                                            */
+   730→/* ------------------------------------------------------------------ */
+   731→
+   732→function Contact() {
+   733→  return (
+   734→    <Section id="contact">
+   735→      <div className="flex items-center gap-3 mb-2">
+   736→        <div className="w-8 h-1 bg-primary rounded-full" />
+   737→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+   738→          Contact
+   739→        </span>
+   740→      </div>
+   741→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   742→        Let{"'"}s Connect
+   743→      </h2>
+   744→      <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
+   745→        I{"'"}m actively seeking Junior Data Analyst positions. Whether you have an
+   746→        opportunity, a question, or just want to say hello — I{"'"}d love to hear from
+   747→        you.
+   748→      </p>
+   749→
+   750→      <div className="grid sm:grid-cols-3 gap-4 max-w-2xl">
+   751→        <a
+   752→          href="https://www.linkedin.com/in/sena-erdem-a64b91345/"
+   753→          target="_blank"
+   754→          rel="noopener noreferrer"
+   755→          className="group flex flex-col items-center gap-3 rounded-xl border border-border bg-card/50 p-6 hover:border-primary/20 hover:bg-card/80 transition-all duration-300"
+   756→        >
+   757→          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+   758→            <Linkedin className="h-5 w-5 text-primary" />
+   759→          </div>
+   760→          <div className="text-center">
+   761→            <div className="font-semibold text-sm">LinkedIn</div>
+   762→            <div className="text-xs text-muted-foreground mt-1">Connect with me</div>
+   763→          </div>
+   764→        </a>
+   765→
+   766→        <a
+   767→          href="https://github.com/senaerdemm2"
+   768→          target="_blank"
+   769→          rel="noopener noreferrer"
+   770→          className="group flex flex-col items-center gap-3 rounded-xl border border-border bg-card/50 p-6 hover:border-primary/20 hover:bg-card/80 transition-all duration-300"
+   771→        >
+   772→          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+   773→            <Github className="h-5 w-5 text-primary" />
+   774→          </div>
+   775→          <div className="text-center">
+   776→            <div className="font-semibold text-sm">GitHub</div>
+   777→            <div className="text-xs text-muted-foreground mt-1">View my code</div>
+   778→          </div>
+   779→        </a>
+   780→
+   781→        <a
+   782→          href="mailto:senaerdem.contact@gmail.com"
+   783→          className="group flex flex-col items-center gap-3 rounded-xl border border-border bg-card/50 p-6 hover:border-primary/20 hover:bg-card/80 transition-all duration-300"
+   784→        >
+   785→          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+   786→            <Mail className="h-5 w-5 text-primary" />
+   787→          </div>
+   788→          <div className="text-center">
+   789→            <div className="font-semibold text-sm">Email</div>
+   790→            <div className="text-xs text-muted-foreground mt-1">senaerdem.contact@gmail.com</div>
+   791→          </div>
+   792→        </a>
+   793→      </div>
+   794→    </Section>
+   795→  );
+   796→}
+   797→
+   798→/* ------------------------------------------------------------------ */
+   799→/*  FOOTER                                                             */
+   800→/* ------------------------------------------------------------------ */
+   801→
+   802→function Footer() {
+   803→  return (
+   804→    <footer className="border-t border-border py-8 px-4 mt-auto">
+   805→      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+   806→        <div className="text-sm text-muted-foreground">
+   807→          © {new Date().getFullYear()} Sena Erdem. Built with Next.js & Tailwind CSS.
+   808→        </div>
+   809→        <div className="flex items-center gap-3">
+   810→          <a href="https://github.com/senaerdemm2" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+   811→            <Github className="h-4 w-4" />
+   812→          </a>
+   813→          <a href="https://www.linkedin.com/in/sena-erdem-a64b91345/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+   814→            <Linkedin className="h-4 w-4" />
+   815→          </a>
+   816→        </div>
+   817→      </div>
+   818→    </footer>
+   819→  );
+   820→}
+   821→
+   822→/* ------------------------------------------------------------------ */
+   823→/*  PAGE                                                               */
+   824→/* ------------------------------------------------------------------ */
+   825→
+   826→export default function PortfolioPage() {
+   827→  return (
+   828→    <div className="min-h-screen flex flex-col">
+   829→      <Navigation />
+   830→      <main className="flex-1">
+   831→        <Hero />
+   832→        <About />
+   833→        <Skills />
+   834→        <Projects />
+   835→        <Certifications />
+   836→        <Contact />
+   837→      </main>
+   838→      <Footer />
+   839→    </div>
+   840→  );
+   841→}
+   842→
