@@ -1,0 +1,1109 @@
+     1→"use client";
+     2→
+     3→import { motion, useInView, AnimatePresence } from "framer-motion";
+     4→import { useRef, useState, useEffect, useCallback } from "react";
+     5→import {
+     6→  Database,
+     7→  BarChart3,
+     8→  Code2,
+     9→  FileSpreadsheet,
+    10→  Brain,
+    11→  TrendingUp,
+    12→  Github,
+    13→  Linkedin,
+    14→  Mail,
+    15→  ChevronDown,
+    16→  ChevronLeft,
+    17→  ChevronRight,
+    18→  Award,
+    19→  Target,
+    20→  Sparkles,
+    21→  ArrowUpRight,
+    22→  Menu,
+    23→  X,
+    24→  XCircle,
+    25→} from "lucide-react";
+    26→import { Badge } from "@/components/ui/badge";
+    27→import { Button } from "@/components/ui/button";
+    28→import { Progress } from "@/components/ui/progress";
+    29→
+    30→/* ------------------------------------------------------------------ */
+    31→/*  DATA                                                               */
+    32→/* ------------------------------------------------------------------ */
+    33→
+    34→const NAV_ITEMS = ["Tech Stack", "About", "Experience", "Skills", "Projects", "Certifications", "Contact"] as const;
+    35→
+    36→const TECH_STACK = [
+    37→  { name: "Python", icon: "🐍", category: "Language" },
+    38→  { name: "SQL", icon: "🗃️", category: "Language" },
+    39→  { name: "DAX", icon: "📊", category: "Language" },
+    40→  { name: "Power BI", icon: "📈", category: "Visualization" },
+    41→  { name: "Excel", icon: "📗", category: "Tool" },
+    42→  { name: "Pandas", icon: "🐻", category: "Library" },
+    43→  { name: "NumPy", icon: "🔢", category: "Library" },
+    44→  { name: "SciPy", icon: "🔬", category: "Library" },
+    45→  { name: "Scikit-Learn", icon: "🤖", category: "Library" },
+    46→  { name: "Matplotlib", icon: "📉", category: "Visualization" },
+    47→  { name: "Seaborn", icon: "🎨", category: "Visualization" },
+    48→  { name: "PostgreSQL", icon: "🐘", category: "Database" },
+    49→  { name: "SQL Server", icon: "🗄️", category: "Database" },
+    50→  { name: "Power Query", icon: "🔄", category: "Tool" },
+    51→  { name: "Git", icon: "📦", category: "Tool" },
+    52→];
+    53→
+    54→const SKILL_CATEGORIES = [
+    55→  {
+    56→    title: "Programming & Query Languages",
+    57→    skills: [
+    58→      { name: "Python (Pandas, NumPy, SciPy, Scikit-Learn)", level: 90 },
+    59→      { name: "SQL (PostgreSQL, SQL Server)", level: 92 },
+    60→      { name: "DAX (Power BI)", level: 80 },
+    61→    ],
+    62→  },
+    63→  {
+    64→    title: "Data Visualization & BI",
+    65→    skills: [
+    66→      { name: "Power BI", level: 88 },
+    67→      { name: "Excel (Pivot Tables, Power Query, VBA)", level: 85 },
+    68→      { name: "Matplotlib / Seaborn", level: 82 },
+    69→    ],
+    70→  },
+    71→  {
+    72→    title: "Analytics & Methods",
+    73→    skills: [
+    74→      { name: "Statistical Analysis & Hypothesis Testing", level: 85 },
+    75→      { name: "Exploratory Data Analysis (EDA)", level: 90 },
+    76→      { name: "KPI Analysis & Business Intelligence", level: 84 },
+    77→    ],
+    78→  },
+    79→];
+    80→
+    81→const PROJECTS = [
+    82→  {
+    83→    title: "Student Support Programs — What Actually Works?",
+    84→    description:
+    85→      "Analyzed 1,000 student records across 16 behavioral features. Ran 9 statistical hypothesis tests (SciPy) and built a predictive model (Scikit-Learn, R² = 0.897) to quantify what drives exam scores. Delivered findings through an interactive Power BI dashboard.",
+    86→    tech: ["Python", "Pandas", "SciPy", "Scikit-Learn", "Power BI"],
+    87→    highlights: ["R² = 0.897 predictive model", "9 hypothesis tests", "Interactive Power BI dashboard"],
+    88→    github: "https://github.com/senaerdemm2/student-habits-academic-performance-analysis_",
+    89→    icon: Target,
+    90→    color: "from-emerald-500/20 to-teal-500/20",
+    91→    images: ["/dashboards/student_dashboard.png"],
+    92→  },
+    93→  {
+    94→    title: "Olist E-Commerce Dashboard — SQL + Power BI",
+    95→    description:
+    96→      "Analyzed ~99K orders and BRL 15.4M in revenue from the Brazilian Olist marketplace (2016-2018). Built a 2-page executive dashboard answering 6 concrete business questions covering geographic concentration, customer retention, delivery SLA, and seasonal trends.",
+    97→    tech: ["PostgreSQL", "SQL (CTE, Window Functions)", "Power BI", "DAX"],
+    98→    highlights: ["~99K orders analyzed", "BRL 15.4M revenue", "2-page executive dashboard"],
+    99→    github: "https://github.com/senaerdemm2/olist-ecommerce-analysis",
+   100→    icon: BarChart3,
+   101→    color: "from-cyan-500/20 to-blue-500/20",
+   102→    images: ["/dashboards/olist_page1.png", "/dashboards/olist_page2.png"],
+   103→  },
+   104→  {
+   105→    title: "FAST-LI Search Data Analysis",
+   106→    description:
+   107→      "Explored and analyzed the FAST-LI search dataset using Jupyter Notebooks. Performed data exploration, preprocessing, and visualization to uncover patterns and insights from the search data.",
+   108→    tech: ["Python", "Jupyter Notebook", "Pandas", "Matplotlib"],
+   109→    highlights: ["Jupyter Notebook", "Data exploration", "Visualization"],
+   110→    github: "https://github.com/senaerdemm2/fastli-search-data",
+   111→    icon: TrendingUp,
+   112→    color: "from-amber-500/20 to-orange-500/20",
+   113→    images: [],
+   114→  },
+   115→  {
+   116→    title: "Global Superstore — Power BI Dashboard",
+   117→    description:
+   118→      "End-to-end Power BI dashboard analyzing global superstore sales, profitability, and regional performance across multiple markets. Features 5 interactive pages: Overview, Product Analysis, Region Analysis, Customer Analysis, and Drillthrough.",
+   119→    tech: ["Power BI", "DAX", "Power Query"],
+   120→    highlights: ["5 interactive pages", "Multi-market analysis", "Executive dashboard"],
+   121→    github: "https://github.com/senaerdemm2/Global-Superstore-Power-BI-Project",
+   122→    icon: Database,
+   123→    color: "from-violet-500/20 to-purple-500/20",
+   124→    images: [
+   125→      "/dashboards/global_overview.png",
+   126→      "/dashboards/global_product.png",
+   127→      "/dashboards/global_region.png",
+   128→      "/dashboards/global_customer.png",
+   129→      "/dashboards/global_drillthrough.png",
+   130→    ],
+   131→  },
+   132→  {
+   133→    title: "Remote Work Health Impact — EDA",
+   134→    description:
+   135→      "Comprehensive exploratory data analysis on post-pandemic remote work health impact (2025) with statistical validation. Investigated correlations between remote work patterns and employee wellbeing metrics.",
+   136→    tech: ["Python", "Pandas", "Matplotlib", "Seaborn"],
+   137→    highlights: ["Statistical validation", "2025 dataset", "Health & wellbeing focus"],
+   138→    github: "https://github.com/senaerdemm2/remote-work-health-analysis",
+   139→    icon: Brain,
+   140→    color: "from-rose-500/20 to-pink-500/20",
+   141→    images: [],
+   142→  },
+   143→  {
+   144→    title: "Power BI Sales Dashboard",
+   145→    description:
+   146→      "Dynamic sales dashboard built with Power BI, featuring interactive KPIs, trend analysis, and drill-down capabilities for tracking business performance metrics.",
+   147→    tech: ["Power BI", "DAX", "SQL"],
+   148→    highlights: ["Interactive KPIs", "Trend analysis", "Drill-down reports"],
+   149→    github: "https://github.com/senaerdemm2/powerBI_sales_dashboard",
+   150→    icon: BarChart3,
+   151→    color: "from-sky-500/20 to-indigo-500/20",
+   152→    images: [],
+   153→  },
+   154→];
+   155→
+   156→const CERTIFICATIONS = [
+   157→  {
+   158→    title: "SQL (Advanced)",
+   159→    issuer: "HackerRank",
+   160→    date: "Jul 2026",
+   161→    credentialId: "1586C7F75F01",
+   162→  },
+   163→  {
+   164→    title: "SQL (Intermediate)",
+   165→    issuer: "HackerRank",
+   166→    date: "Jul 2026",
+   167→    credentialId: "4BC02786182F",
+   168→  },
+   169→  {
+   170→    title: "SQL (Basic)",
+   171→    issuer: "HackerRank",
+   172→    date: "Jul 2026",
+   173→    credentialId: "194DEE78A8D1",
+   174→  },
+   175→  {
+   176→    title: "B356-357 Data Analysis Certificate",
+   177→    issuer: "TechPro Education",
+   178→    date: "Nov 2025",
+   179→    credentialId: "4634541267SE",
+   180→  },
+   181→];
+   182→
+   183→const STATS = [
+   184→  { value: 6, label: "Projects", suffix: "" },
+   185→  { value: 4, label: "Certifications", suffix: "" },
+   186→  { value: 99, label: "K+ Rows Analyzed", suffix: "" },
+   187→  { value: 5, label: "Core Tools", suffix: "+" },
+   188→];
+   189→
+   190→/* ------------------------------------------------------------------ */
+   191→/*  ANIMATED COUNTER                                                   */
+   192→/* ------------------------------------------------------------------ */
+   193→
+   194→function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
+   195→  const [count, setCount] = useState(0);
+   196→  const ref = useRef<HTMLSpanElement>(null);
+   197→  const inView = useInView(ref, { once: true, margin: "-50px" });
+   198→
+   199→  useEffect(() => {
+   200→    if (!inView) return;
+   201→    let start = 0;
+   202→    const duration = 2000;
+   203→    const step = (timestamp: number) => {
+   204→      if (!start) start = timestamp;
+   205→      const progress = Math.min((timestamp - start) / duration, 1);
+   206→      const eased = 1 - Math.pow(1 - progress, 3);
+   207→      setCount(Math.floor(eased * target));
+   208→      if (progress < 1) requestAnimationFrame(step);
+   209→    };
+   210→    requestAnimationFrame(step);
+   211→  }, [inView, target]);
+   212→
+   213→  return (
+   214→    <span ref={ref} className="tabular-nums">
+   215→      {count}
+   216→      {suffix}
+   217→    </span>
+   218→  );
+   219→}
+   220→
+   221→/* ------------------------------------------------------------------ */
+   222→/*  DASHBOARD IMAGE CAROUSEL                                           */
+   223→/* ------------------------------------------------------------------ */
+   224→
+   225→function DashboardCarousel({ images }: { images: string[] }) {
+   226→  const [current, setCurrent] = useState(0);
+   227→  const [lightbox, setLightbox] = useState(false);
+   228→
+   229→  const next = useCallback(() => setCurrent((i) => (i + 1) % images.length), [images.length]);
+   230→  const prev = useCallback(() => setCurrent((i) => (i - 1 + images.length) % images.length), [images.length]);
+   231→
+   232→  if (!images || images.length === 0) return null;
+   233→
+   234→  return (
+   235→    <>
+   236→      {/* Thumbnail strip */}
+   237→      <div className="mt-5 relative">
+   238→        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+   239→          {images.map((img, i) => (
+   240→            <button
+   241→              key={img}
+   242→              onClick={() => { setCurrent(i); setLightbox(true); }}
+   243→              className={`shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:border-primary/50 ${
+   244→                i === current && !lightbox ? "border-primary" : "border-border/50"
+   245→              }`}
+   246→            >
+   247→              <img
+   248→                src={img}
+   249→                alt={`Dashboard ${i + 1}`}
+   250→                className="w-48 h-28 sm:w-56 sm:h-32 object-cover object-top"
+   251→              />
+   252→            </button>
+   253→          ))}
+   254→        </div>
+   255→        <p className="text-[11px] text-muted-foreground/60 mt-2">
+   256→          Click to enlarge
+   257→        </p>
+   258→      </div>
+   259→
+   260→      {/* Lightbox */}
+   261→      <AnimatePresence>
+   262→        {lightbox && images.length > 0 && (
+   263→          <motion.div
+   264→            initial={{ opacity: 0 }}
+   265→            animate={{ opacity: 1 }}
+   266→            exit={{ opacity: 0 }}
+   267→            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+   268→            onClick={() => setLightbox(false)}
+   269→          >
+   270→            {/* Close button */}
+   271→            <button
+   272→              className="absolute top-4 right-4 text-white/70 hover:text-white z-10"
+   273→              onClick={() => setLightbox(false)}
+   274→            >
+   275→              <XCircle className="h-8 w-8" />
+   276→            </button>
+   277→
+   278→            {/* Nav arrows */}
+   279→            {images.length > 1 && (
+   280→              <>
+   281→                <button
+   282→                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white z-10"
+   283→                  onClick={(e) => { e.stopPropagation(); prev(); }}
+   284→                >
+   285→                  <ChevronLeft className="h-10 w-10" />
+   286→                </button>
+   287→                <button
+   288→                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white z-10"
+   289→                  onClick={(e) => { e.stopPropagation(); next(); }}
+   290→                >
+   291→                  <ChevronRight className="h-10 w-10" />
+   292→                </button>
+   293→              </>
+   294→            )}
+   295→
+   296→            {/* Image counter */}
+   297→            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/50 text-sm">
+   298→              {current + 1} / {images.length}
+   299→            </div>
+   300→
+   301→            {/* Image */}
+   302→            <motion.div
+   303→              key={current}
+   304→              initial={{ opacity: 0, scale: 0.95 }}
+   305→              animate={{ opacity: 1, scale: 1 }}
+   306→              exit={{ opacity: 0, scale: 0.95 }}
+   307→              transition={{ duration: 0.2 }}
+   308→              className="max-w-[90vw] max-h-[85vh]"
+   309→              onClick={(e) => e.stopPropagation()}
+   310→            >
+   311→              <img
+   312→                src={images[current]}
+   313→                alt={`Dashboard ${current + 1}`}
+   314→                className="max-w-full max-h-[85vh] object-contain rounded-lg"
+   315→              />
+   316→            </motion.div>
+   317→          </motion.div>
+   318→        )}
+   319→      </AnimatePresence>
+   320→    </>
+   321→  );
+   322→}
+   323→
+   324→/* ------------------------------------------------------------------ */
+   325→/*  SECTION WRAPPER                                                    */
+   326→/* ------------------------------------------------------------------ */
+   327→
+   328→function Section({
+   329→  id,
+   330→  children,
+   331→  className = "",
+   332→}: {
+   333→  id: string;
+   334→  children: React.ReactNode;
+   335→  className?: string;
+   336→}) {
+   337→  const ref = useRef<HTMLElement>(null);
+   338→  const inView = useInView(ref, { once: true, margin: "-80px" });
+   339→
+   340→  return (
+   341→    <section
+   342→      id={id}
+   343→      ref={ref}
+   344→      className={`py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto ${className}`}
+   345→    >
+   346→      <motion.div
+   347→        initial={{ opacity: 0, y: 40 }}
+   348→        animate={inView ? { opacity: 1, y: 0 } : {}}
+   349→        transition={{ duration: 0.7, ease: "easeOut" }}
+   350→      >
+   351→        {children}
+   352→      </motion.div>
+   353→    </section>
+   354→  );
+   355→}
+   356→
+   357→/* ------------------------------------------------------------------ */
+   358→/*  NAVIGATION                                                         */
+   359→/* ------------------------------------------------------------------ */
+   360→
+   361→function Navigation() {
+   362→  const [scrolled, setScrolled] = useState(false);
+   363→  const [mobileOpen, setMobileOpen] = useState(false);
+   364→
+   365→  useEffect(() => {
+   366→    const handler = () => setScrolled(window.scrollY > 40);
+   367→    window.addEventListener("scroll", handler, { passive: true });
+   368→    return () => window.removeEventListener("scroll", handler);
+   369→  }, []);
+   370→
+   371→  return (
+   372→    <motion.nav
+   373→      initial={{ y: -80 }}
+   374→      animate={{ y: 0 }}
+   375→      transition={{ duration: 0.6, ease: "easeOut" }}
+   376→      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+   377→        scrolled
+   378→          ? "bg-background/80 backdrop-blur-xl border-b border-border shadow-lg shadow-black/10"
+   379→          : "bg-transparent"
+   380→      }`}
+   381→    >
+   382→      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+   383→        <a href="#hero" className="text-lg font-bold tracking-tight">
+   384→          <span className="text-primary">SE</span>
+   385→          <span className="text-muted-foreground font-light ml-1 text-sm hidden sm:inline">Sena Erdem</span>
+   386→        </a>
+   387→
+   388→        <ul className="hidden md:flex items-center gap-1">
+   389→          {NAV_ITEMS.map((item) => (
+   390→            <li key={item}>
+   391→              <a
+   392→                href={`#${item.toLowerCase().replace(/ /g, "-")}`}
+   393→                className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary"
+   394→              >
+   395→                {item}
+   396→              </a>
+   397→            </li>
+   398→          ))}
+   399→        </ul>
+   400→
+   401→        <div className="hidden md:flex items-center gap-2">
+   402→          <a href="https://github.com/senaerdemm2" target="_blank" rel="noopener noreferrer">
+   403→            <Button variant="ghost" size="icon" className="h-9 w-9">
+   404→              <Github className="h-4 w-4" />
+   405→            </Button>
+   406→          </a>
+   407→          <a href="https://www.linkedin.com/in/sena-erdem-a64b91345/" target="_blank" rel="noopener noreferrer">
+   408→            <Button variant="ghost" size="icon" className="h-9 w-9">
+   409→              <Linkedin className="h-4 w-4" />
+   410→            </Button>
+   411→          </a>
+   412→          <a href="#contact">
+   413→            <Button size="sm" className="rounded-full px-5">
+   414→              Hire Me
+   415→            </Button>
+   416→          </a>
+   417→        </div>
+   418→
+   419→        <Button
+   420→          variant="ghost"
+   421→          size="icon"
+   422→          className="md:hidden h-9 w-9"
+   423→          onClick={() => setMobileOpen(!mobileOpen)}
+   424→        >
+   425→          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+   426→        </Button>
+   427→      </div>
+   428→
+   429→      {mobileOpen && (
+   430→        <motion.div
+   431→          initial={{ opacity: 0, height: 0 }}
+   432→          animate={{ opacity: 1, height: "auto" }}
+   433→          exit={{ opacity: 0, height: 0 }}
+   434→          className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border"
+   435→        >
+   436→          <ul className="flex flex-col px-4 py-4 gap-1">
+   437→            {NAV_ITEMS.map((item) => (
+   438→              <li key={item}>
+   439→                <a
+   440→                  href={`#${item.toLowerCase().replace(/ /g, "-")}`}
+   441→                  onClick={() => setMobileOpen(false)}
+   442→                  className="block px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary"
+   443→                >
+   444→                  {item}
+   445→                </a>
+   446→              </li>
+   447→            ))}
+   448→            <li className="flex gap-2 mt-3 pt-3 border-t border-border">
+   449→              <a href="https://github.com/senaerdemm2" target="_blank" rel="noopener noreferrer">
+   450→                <Button variant="ghost" size="icon" className="h-9 w-9">
+   451→                  <Github className="h-4 w-4" />
+   452→                </Button>
+   453→              </a>
+   454→              <a href="https://www.linkedin.com/in/sena-erdem-a64b91345/" target="_blank" rel="noopener noreferrer">
+   455→                <Button variant="ghost" size="icon" className="h-9 w-9">
+   456→                  <Linkedin className="h-4 w-4" />
+   457→                </Button>
+   458→              </a>
+   459→            </li>
+   460→          </ul>
+   461→        </motion.div>
+   462→      )}
+   463→    </motion.nav>
+   464→  );
+   465→}
+   466→
+   467→/* ------------------------------------------------------------------ */
+   468→/*  HERO                                                               */
+   469→/* ------------------------------------------------------------------ */
+   470→
+   471→function Hero() {
+   472→  return (
+   473→    <section
+   474→      id="hero"
+   475→      className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 overflow-hidden"
+   476→    >
+   477→      <div className="absolute inset-0 -z-10">
+   478→        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/8 rounded-full blur-[120px]" />
+   479→        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent" />
+   480→      </div>
+   481→
+   482→      <div className="max-w-4xl mx-auto text-center">
+   483→        <motion.div
+   484→          initial={{ opacity: 0, y: 30 }}
+   485→          animate={{ opacity: 1, y: 0 }}
+   486→          transition={{ duration: 0.8, ease: "easeOut" }}
+   487→        >
+   488→          <Badge
+   489→            variant="secondary"
+   490→            className="mb-6 px-4 py-1.5 text-xs font-medium tracking-wide uppercase"
+   491→          >
+   492→            <Sparkles className="h-3 w-3 mr-1.5 text-primary" />
+   493→            Open to Opportunities
+   494→          </Badge>
+   495→        </motion.div>
+   496→
+   497→        <motion.div
+   498→          initial={{ opacity: 0, scale: 0.8 }}
+   499→          animate={{ opacity: 1, scale: 1 }}
+   500→          transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+   501→          className="mb-8 flex justify-center"
+   502→        >
+   503→          <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-border bg-secondary">
+   504→              <img
+   505→                src="/profile.jpg"
+   506→                alt="Sena Erdem"
+   507→                className="w-full h-full object-cover"
+   508→              />
+   509→        </motion.div>
+   510→
+   511→        <motion.h1
+   512→          initial={{ opacity: 0, y: 30 }}
+   513→          animate={{ opacity: 1, y: 0 }}
+   514→          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+   515→          className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
+   516→        >
+   517→          Hi, I{"'"}m{" "}
+   518→          <span className="bg-gradient-to-r from-primary via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+   519→            Sena Erdem
+   520→          </span>
+   521→        </motion.h1>
+   522→
+   523→        <motion.p
+   524→          initial={{ opacity: 0, y: 30 }}
+   525→          animate={{ opacity: 1, y: 0 }}
+   526→          transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
+   527→          className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+   528→        >
+   529→          Junior Data Analyst based in{" "}
+   530→          <span className="text-foreground font-medium">Warsaw, Poland</span>.{" "}
+   531→          I turn raw data into{" "}
+   532→          <span className="text-primary font-medium">actionable business insights</span>{" "}
+   533→          using Python, SQL, and Power BI.
+   534→        </motion.p>
+   535→
+   536→        <motion.div
+   537→          initial={{ opacity: 0, y: 30 }}
+   538→          animate={{ opacity: 1, y: 0 }}
+   539→          transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+   540→          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+   541→        >
+   542→          <a href="#projects">
+   543→            <Button size="lg" className="rounded-full px-8 h-12 text-sm font-semibold">
+   544→              View My Projects
+   545→              <ArrowUpRight className="ml-2 h-4 w-4" />
+   546→            </Button>
+   547→          </a>
+   548→          <a href="https://www.linkedin.com/in/sena-erdem-a64b91345/" target="_blank" rel="noopener noreferrer">
+   549→            <Button
+   550→              variant="outline"
+   551→              size="lg"
+   552→              className="rounded-full px-8 h-12 text-sm font-semibold"
+   553→            >
+   554→              <Linkedin className="mr-2 h-4 w-4" />
+   555→              LinkedIn Profile
+   556→            </Button>
+   557→          </a>
+   558→        </motion.div>
+   559→
+   560→        <motion.div
+   561→          initial={{ opacity: 0, y: 30 }}
+   562→          animate={{ opacity: 1, y: 0 }}
+   563→          transition={{ duration: 0.8, delay: 0.65, ease: "easeOut" }}
+   564→          className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl mx-auto"
+   565→        >
+   566→          {STATS.map((stat) => (
+   567→            <div key={stat.label} className="text-center">
+   568→              <div className="text-2xl sm:text-3xl font-bold text-primary">
+   569→                <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+   570→              </div>
+   571→              <div className="text-xs sm:text-sm text-muted-foreground mt-1">
+   572→                {stat.label}
+   573→              </div>
+   574→            </div>
+   575→          ))}
+   576→        </motion.div>
+   577→      </div>
+   578→
+   579→      <motion.div
+   580→        initial={{ opacity: 0 }}
+   581→        animate={{ opacity: 1 }}
+   582→        transition={{ delay: 1.2, duration: 1 }}
+   583→        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+   584→      >
+   585→        <motion.div
+   586→          animate={{ y: [0, 8, 0] }}
+   587→          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+   588→        >
+   589→          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+   590→        </motion.div>
+   591→      </motion.div>
+   592→    </section>
+   593→  );
+   594→}
+   595→
+   596→/* ------------------------------------------------------------------ */
+   597→/*  TECH STACK (GitHub README Style)                                   */
+   598→/* ------------------------------------------------------------------ */
+   599→
+   600→function TechStack() {
+   601→  const categories = Array.from(new Set(TECH_STACK.map((t) => t.category)));
+   602→
+   603→  return (
+   604→    <Section id="tech-stack">
+   605→      <div className="flex items-center gap-3 mb-2">
+   606→        <div className="w-8 h-1 bg-primary rounded-full" />
+   607→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+   608→          Tech Stack
+   609→        </span>
+   610→      </div>
+   611→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   612→        Tools & Technologies
+   613→      </h2>
+   614→      <p className="text-muted-foreground max-w-2xl mb-10 leading-relaxed">
+   615→        The tools, languages, and libraries I use daily to analyze data and build dashboards.
+   616→      </p>
+   617→
+   618→      <div className="space-y-6">
+   619→        {categories.map((cat, ci) => (
+   620→          <motion.div
+   621→            key={cat}
+   622→            initial={{ opacity: 0, y: 20 }}
+   623→            whileInView={{ opacity: 1, y: 0 }}
+   624→            viewport={{ once: true, margin: "-40px" }}
+   625→            transition={{ duration: 0.5, delay: ci * 0.1 }}
+   626→          >
+   627→            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-3">
+   628→              {cat}
+   629→            </h3>
+   630→            <div className="flex flex-wrap gap-2">
+   631→              {TECH_STACK.filter((t) => t.category === cat).map((tech, ti) => (
+   632→                <motion.div
+   633→                  key={tech.name}
+   634→                  initial={{ opacity: 0, scale: 0.9 }}
+   635→                  whileInView={{ opacity: 1, scale: 1 }}
+   636→                  viewport={{ once: true }}
+   637→                  transition={{ duration: 0.3, delay: ci * 0.1 + ti * 0.04 }}
+   638→                  whileHover={{ y: -2, scale: 1.05 }}
+   639→                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card/60 hover:border-primary/30 hover:bg-card transition-all duration-200 cursor-default"
+   640→                >
+   641→                  <span className="text-base">{tech.icon}</span>
+   642→                  <span className="text-sm font-medium">{tech.name}</span>
+   643→                </motion.div>
+   644→              ))}
+   645→            </div>
+   646→          </motion.div>
+   647→        ))}
+   648→      </div>
+   649→    </Section>
+   650→  );
+   651→}
+   652→
+   653→/* ------------------------------------------------------------------ */
+   654→/*  EXPERIENCE                                                         */
+   655→/* ------------------------------------------------------------------ */
+   656→
+   657→function Experience() {
+   658→  return (
+   659→    <Section id="experience">
+   660→      <div className="flex items-center gap-3 mb-2">
+   661→        <div className="w-8 h-1 bg-primary rounded-full" />
+   662→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+   663→          Experience
+   664→        </span>
+   665→      </div>
+   666→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   667→        Professional Experience
+   668→      </h2>
+   669→      <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
+   670→        Real-world data analytics experience gained through a project-focused internship.
+   671→      </p>
+   672→
+   673→      <div className="max-w-3xl">
+   674→        <motion.div
+   675→          initial={{ opacity: 0, y: 20 }}
+   676→          whileInView={{ opacity: 1, y: 0 }}
+   677→          viewport={{ once: true, margin: "-40px" }}
+   678→          transition={{ duration: 0.5 }}
+   679→          className="relative rounded-2xl border border-border bg-card/50 p-6 sm:p-8 hover:border-primary/20 transition-all duration-300"
+   680→        >
+   681→          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-5">
+   682→            <div>
+   683→              <h3 className="text-lg font-bold">Data Analyst Intern</h3>
+   684→              <div className="text-primary font-medium text-sm">GLP Software</div>
+   685→            </div>
+   686→            <div className="text-right shrink-0">
+   687→              <div className="text-sm font-medium">08/2025 &ndash; 01/2026</div>
+   688→              <div className="text-xs text-muted-foreground">Warsaw, Poland</div>
+   689→            </div>
+   690→          </div>
+   691→
+   692→          <ul className="space-y-3">
+   693→            {[
+   694→              "Completed a structured internship focused on end-to-end data analysis, including data collection, data cleaning, exploratory data analysis (EDA), and data visualization",
+   695→              "Performed data preprocessing and cleaning using Python (Pandas, NumPy) to ensure data quality and consistency",
+   696→              "Conducted exploratory data analysis (EDA) to identify trends, correlations, and key performance drivers across datasets",
+   697→              "Developed interactive dashboards and visualizations using Power BI, Matplotlib, and Seaborn to communicate insights to stakeholders",
+   698→              "Applied data modeling and DAX calculations in Power BI to enable KPI tracking, filtering, and dynamic reporting",
+   699→              "Delivered actionable insights and recommendations to support data-driven decision-making",
+   700→            ].map((item, i) => (
+   701→              <motion.li
+   702→                key={i}
+   703→                initial={{ opacity: 0, x: -10 }}
+   704→                whileInView={{ opacity: 1, x: 0 }}
+   705→                viewport={{ once: true }}
+   706→                transition={{ duration: 0.3, delay: i * 0.08 }}
+   707→                className="flex gap-3 text-sm text-muted-foreground leading-relaxed"
+   708→              >
+   709→                <span className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-primary/60" />
+   710→                {item}
+   711→              </motion.li>
+   712→            ))}
+   713→          </ul>
+   714→
+   715→          <div className="flex flex-wrap gap-1.5 mt-6 pt-5 border-t border-border">
+   716→            {["Python", "Pandas", "NumPy", "Power BI", "DAX", "Matplotlib", "Seaborn"].map((t) => (
+   717→              <Badge key={t} variant="secondary" className="text-xs font-normal">
+   718→                {t}
+   719→              </Badge>
+   720→            ))}
+   721→          </div>
+   722→        </motion.div>
+   723→      </div>
+   724→    </Section>
+   725→  );
+   726→}
+   727→
+   728→/* ------------------------------------------------------------------ */
+   729→/*  ABOUT                                                              */
+   730→/* ------------------------------------------------------------------ */
+   731→
+   732→function About() {
+   733→  return (
+   734→    <Section id="about">
+   735→      <div className="flex items-center gap-3 mb-2">
+   736→        <div className="w-8 h-1 bg-primary rounded-full" />
+   737→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+   738→          About Me
+   739→        </span>
+   740→      </div>
+   741→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-8">
+   742→        Bridging the Gap Between{" "}
+   743→        <span className="text-primary">Data</span> and{" "}
+   744→        <span className="text-primary">Decisions</span>
+   745→      </h2>
+   746→
+   747→      <div className="grid md:grid-cols-2 gap-10 items-start">
+   748→        <div className="space-y-5 text-muted-foreground leading-relaxed">
+   749→          <p>
+   750→            I{"'"}m a Computer Engineering graduate with a passion for uncovering
+   751→            stories hidden in data. My journey into data analytics began with a
+   752→            simple curiosity: how can numbers guide better business decisions?
+   753→            That question has since driven every project I{"'"}ve built.
+   754→          </p>
+   755→          <p>
+   756→            I specialize in end-to-end data analytics workflows — from extracting
+   757→            and cleaning raw data with SQL and Python, through exploratory analysis
+   758→            and statistical testing, to building interactive dashboards in Power BI
+   759→            that non-technical stakeholders can actually use.
+   760→          </p>
+   761→          <p>
+   762→            Whether it{"'"}s identifying which student support programs deliver real
+   763→            ROI, analyzing e-commerce revenue patterns, or evaluating Google Ads
+   764→            campaign performance, I bring a rigorous, hypothesis-driven approach
+   765→            to every dataset I touch.
+   766→          </p>
+   767→        </div>
+   768→
+   769→        <div className="space-y-4">
+   770→          <div className="grid grid-cols-2 gap-3">
+   771→            {[
+   772→              { icon: Code2, label: "Python", desc: "Pandas, NumPy, SciPy, Scikit-Learn" },
+   773→              { icon: Database, label: "SQL", desc: "PostgreSQL, SQL Server, CTEs, Window Fns" },
+   774→              { icon: BarChart3, label: "Power BI", desc: "DAX, Power Query, Dashboards" },
+   775→              { icon: FileSpreadsheet, label: "Excel", desc: "Pivot Tables, Power Query, XLOOKUP" },
+   776→            ].map((item) => (
+   777→              <div
+   778→                key={item.label}
+   779→                className="rounded-xl border border-border bg-card/50 p-4 hover:border-primary/30 transition-colors"
+   780→              >
+   781→                <item.icon className="h-5 w-5 text-primary mb-2" />
+   782→                <div className="font-semibold text-sm">{item.label}</div>
+   783→                <div className="text-xs text-muted-foreground mt-1">{item.desc}</div>
+   784→              </div>
+   785→            ))}
+   786→          </div>
+   787→        </div>
+   788→      </div>
+   789→    </Section>
+   790→  );
+   791→}
+   792→
+   793→/* ------------------------------------------------------------------ */
+   794→/*  SKILLS                                                             */
+   795→/* ------------------------------------------------------------------ */
+   796→
+   797→function Skills() {
+   798→  return (
+   799→    <Section id="skills">
+   800→      <div className="flex items-center gap-3 mb-2">
+   801→        <div className="w-8 h-1 bg-primary rounded-full" />
+   802→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+   803→          Skills
+   804→        </span>
+   805→      </div>
+   806→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   807→        Proficiency Levels
+   808→      </h2>
+   809→      <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
+   810→        A comprehensive set of tools and methodologies I use to transform raw data
+   811→        into clear, actionable business insights.
+   812→      </p>
+   813→
+   814→      <div className="grid md:grid-cols-3 gap-8">
+   815→        {SKILL_CATEGORIES.map((cat, ci) => (
+   816→          <motion.div
+   817→            key={cat.title}
+   818→            initial={{ opacity: 0, y: 30 }}
+   819→            whileInView={{ opacity: 1, y: 0 }}
+   820→            viewport={{ once: true, margin: "-60px" }}
+   821→            transition={{ duration: 0.6, delay: ci * 0.15 }}
+   822→            className="rounded-2xl border border-border bg-card/50 p-6 hover:border-primary/20 transition-colors"
+   823→          >
+   824→            <h3 className="font-semibold text-sm mb-6 text-foreground/90">
+   825→              {cat.title}
+   826→            </h3>
+   827→            <div className="space-y-5">
+   828→              {cat.skills.map((skill) => (
+   829→                <div key={skill.name}>
+   830→                  <div className="flex justify-between text-sm mb-2">
+   831→                    <span className="text-muted-foreground">{skill.name}</span>
+   832→                    <span className="text-primary font-semibold tabular-nums">{skill.level}%</span>
+   833→                  </div>
+   834→                  <Progress value={skill.level} className="h-2 bg-secondary" />
+   835→                </div>
+   836→              ))}
+   837→            </div>
+   838→          </motion.div>
+   839→        ))}
+   840→      </div>
+   841→    </Section>
+   842→  );
+   843→}
+   844→
+   845→/* ------------------------------------------------------------------ */
+   846→/*  PROJECTS                                                           */
+   847→/* ------------------------------------------------------------------ */
+   848→
+   849→function Projects() {
+   850→  return (
+   851→    <Section id="projects">
+   852→      <div className="flex items-center gap-3 mb-2">
+   853→        <div className="w-8 h-1 bg-primary rounded-full" />
+   854→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+   855→          Projects
+   856→        </span>
+   857→      </div>
+   858→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   859→        Featured Work
+   860→      </h2>
+   861→      <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
+   862→        Each project follows a rigorous, end-to-end analytics workflow — from data
+   863→        collection and cleaning through statistical analysis to interactive visualization.
+   864→      </p>
+   865→
+   866→      <div className="grid gap-6">
+   867→        {PROJECTS.map((project, i) => (
+   868→          <motion.div
+   869→            key={project.title}
+   870→            initial={{ opacity: 0, y: 30 }}
+   871→            whileInView={{ opacity: 1, y: 0 }}
+   872→            viewport={{ once: true, margin: "-40px" }}
+   873→            transition={{ duration: 0.6, delay: i * 0.1 }}
+   874→            className="group rounded-2xl border border-border bg-card/50 hover:border-primary/20 transition-all duration-300 overflow-hidden"
+   875→          >
+   876→            <div className="p-6 sm:p-8">
+   877→              <div className="flex flex-col sm:flex-row sm:items-start gap-5">
+   878→                <div
+   879→                  className={`shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${project.color} flex items-center justify-center border border-border/50`}
+   880→                >
+   881→                  <project.icon className="h-5 w-5 text-foreground" />
+   882→                </div>
+   883→
+   884→                <div className="flex-1 min-w-0">
+   885→                  <div className="flex items-start justify-between gap-3 mb-3">
+   886→                    <h3 className="text-lg font-bold leading-snug group-hover:text-primary transition-colors">
+   887→                      {project.title}
+   888→                    </h3>
+   889→                    <a
+   890→                      href={project.github}
+   891→                      target="_blank"
+   892→                      rel="noopener noreferrer"
+   893→                      className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
+   894→                      aria-label={`View ${project.title} on GitHub`}
+   895→                    >
+   896→                      <Github className="h-5 w-5" />
+   897→                    </a>
+   898→                  </div>
+   899→
+   900→                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+   901→                    {project.description}
+   902→                  </p>
+   903→
+   904→                  <div className="flex flex-wrap gap-2 mb-4">
+   905→                    {project.highlights.map((h) => (
+   906→                      <span
+   907→                        key={h}
+   908→                        className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20"
+   909→                      >
+   910→                        {h}
+   911→                      </span>
+   912→                    ))}
+   913→                  </div>
+   914→
+   915→                  <div className="flex flex-wrap gap-1.5">
+   916→                    {project.tech.map((t) => (
+   917→                      <Badge key={t} variant="secondary" className="text-xs font-normal">
+   918→                        {t}
+   919→                      </Badge>
+   920→                    ))}
+   921→                  </div>
+   922→                </div>
+   923→              </div>
+   924→
+   925→              {/* Dashboard screenshots */}
+   926→              {project.images.length > 0 && (
+   927→                <DashboardCarousel images={project.images} />
+   928→              )}
+   929→            </div>
+   930→          </motion.div>
+   931→        ))}
+   932→      </div>
+   933→    </Section>
+   934→  );
+   935→}
+   936→
+   937→/* ------------------------------------------------------------------ */
+   938→/*  CERTIFICATIONS                                                     */
+   939→/* ------------------------------------------------------------------ */
+   940→
+   941→function Certifications() {
+   942→  return (
+   943→    <Section id="certifications">
+   944→      <div className="flex items-center gap-3 mb-2">
+   945→        <div className="w-8 h-1 bg-primary rounded-full" />
+   946→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+   947→          Certifications
+   948→        </span>
+   949→      </div>
+   950→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   951→        Credentials
+   952→      </h2>
+   953→      <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
+   954→        Continuously validating and expanding my technical skills through
+   955→        industry-recognized certifications.
+   956→      </p>
+   957→
+   958→      <div className="grid sm:grid-cols-2 gap-4">
+   959→        {CERTIFICATIONS.map((cert, i) => (
+   960→          <motion.div
+   961→            key={cert.credentialId}
+   962→            initial={{ opacity: 0, y: 20 }}
+   963→            whileInView={{ opacity: 1, y: 0 }}
+   964→            viewport={{ once: true, margin: "-40px" }}
+   965→            transition={{ duration: 0.5, delay: i * 0.1 }}
+   966→            className="group rounded-xl border border-border bg-card/50 p-5 hover:border-primary/20 transition-all duration-300"
+   967→          >
+   968→            <div className="flex items-start gap-4">
+   969→              <div className="shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+   970→                <Award className="h-5 w-5 text-primary" />
+   971→              </div>
+   972→              <div className="flex-1 min-w-0">
+   973→                <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">
+   974→                  {cert.title}
+   975→                </h3>
+   976→                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+   977→                  <span>{cert.issuer}</span>
+   978→                  <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+   979→                  <span>{cert.date}</span>
+   980→                </div>
+   981→                <div className="text-[11px] text-muted-foreground/60 mt-1.5 font-mono">
+   982→                  ID: {cert.credentialId}
+   983→                </div>
+   984→              </div>
+   985→            </div>
+   986→          </motion.div>
+   987→        ))}
+   988→      </div>
+   989→    </Section>
+   990→  );
+   991→}
+   992→
+   993→/* ------------------------------------------------------------------ */
+   994→/*  CONTACT                                                            */
+   995→/* ------------------------------------------------------------------ */
+   996→
+   997→function Contact() {
+   998→  return (
+   999→    <Section id="contact">
+  1000→      <div className="flex items-center gap-3 mb-2">
+  1001→        <div className="w-8 h-1 bg-primary rounded-full" />
+  1002→        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+  1003→          Contact
+  1004→        </span>
+  1005→      </div>
+  1006→      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+  1007→        Let{"'"}s Connect
+  1008→      </h2>
+  1009→      <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
+  1010→        I{"'"}m actively seeking Junior Data Analyst positions. Whether you have an
+  1011→        opportunity, a question, or just want to say hello — I{"'"}d love to hear from
+  1012→        you.
+  1013→      </p>
+  1014→
+  1015→      <div className="grid sm:grid-cols-3 gap-4 max-w-2xl">
+  1016→        <a
+  1017→          href="https://www.linkedin.com/in/sena-erdem-a64b91345/"
+  1018→          target="_blank"
+  1019→          rel="noopener noreferrer"
+  1020→          className="group flex flex-col items-center gap-3 rounded-xl border border-border bg-card/50 p-6 hover:border-primary/20 hover:bg-card/80 transition-all duration-300"
+  1021→        >
+  1022→          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+  1023→            <Linkedin className="h-5 w-5 text-primary" />
+  1024→          </div>
+  1025→          <div className="text-center">
+  1026→            <div className="font-semibold text-sm">LinkedIn</div>
+  1027→            <div className="text-xs text-muted-foreground mt-1">Connect with me</div>
+  1028→          </div>
+  1029→        </a>
+  1030→
+  1031→        <a
+  1032→          href="https://github.com/senaerdemm2"
+  1033→          target="_blank"
+  1034→          rel="noopener noreferrer"
+  1035→          className="group flex flex-col items-center gap-3 rounded-xl border border-border bg-card/50 p-6 hover:border-primary/20 hover:bg-card/80 transition-all duration-300"
+  1036→        >
+  1037→          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+  1038→            <Github className="h-5 w-5 text-primary" />
+  1039→          </div>
+  1040→          <div className="text-center">
+  1041→            <div className="font-semibold text-sm">GitHub</div>
+  1042→            <div className="text-xs text-muted-foreground mt-1">View my code</div>
+  1043→          </div>
+  1044→        </a>
+  1045→
+  1046→        <a
+  1047→          href="mailto:sena.erdem.pl@gmail.com"
+  1048→          className="group flex flex-col items-center gap-3 rounded-xl border border-border bg-card/50 p-6 hover:border-primary/20 hover:bg-card/80 transition-all duration-300"
+  1049→        >
+  1050→          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+  1051→            <Mail className="h-5 w-5 text-primary" />
+  1052→          </div>
+  1053→          <div className="text-center">
+  1054→            <div className="font-semibold text-sm">Email</div>
+  1055→            <div className="text-xs text-muted-foreground mt-1">sena.erdem.pl@gmail.com</div>
+  1056→          </div>
+  1057→        </a>
+  1058→      </div>
+  1059→    </Section>
+  1060→  );
+  1061→}
+  1062→
+  1063→/* ------------------------------------------------------------------ */
+  1064→/*  FOOTER                                                             */
+  1065→/* ------------------------------------------------------------------ */
+  1066→
+  1067→function Footer() {
+  1068→  return (
+  1069→    <footer className="border-t border-border py-8 px-4 mt-auto">
+  1070→      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+  1071→        <div className="text-sm text-muted-foreground">
+  1072→          &copy; {new Date().getFullYear()} Sena Erdem. Built with Next.js & Tailwind CSS.
+  1073→        </div>
+  1074→        <div className="flex items-center gap-3">
+  1075→          <a href="https://github.com/senaerdemm2" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+  1076→            <Github className="h-4 w-4" />
+  1077→          </a>
+  1078→          <a href="https://www.linkedin.com/in/sena-erdem-a64b91345/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+  1079→            <Linkedin className="h-4 w-4" />
+  1080→          </a>
+  1081→        </div>
+  1082→      </div>
+  1083→    </footer>
+  1084→  );
+  1085→}
+  1086→
+  1087→/* ------------------------------------------------------------------ */
+  1088→/*  PAGE                                                               */
+  1089→/* ------------------------------------------------------------------ */
+  1090→
+  1091→export default function PortfolioPage() {
+  1092→  return (
+  1093→    <div className="min-h-screen flex flex-col">
+  1094→      <Navigation />
+  1095→      <main className="flex-1">
+  1096→        <Hero />
+  1097→        <TechStack />
+  1098→        <About />
+  1099→        <Experience />
+  1100→        <Skills />
+  1101→        <Projects />
+  1102→        <Certifications />
+  1103→        <Contact />
+  1104→      </main>
+  1105→      <Footer />
+  1106→    </div>
+  1107→  );
+  1108→}
+  1109→

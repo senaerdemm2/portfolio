@@ -31,7 +31,7 @@ import { Progress } from "@/components/ui/progress";
 /*  DATA                                                               */
 /* ------------------------------------------------------------------ */
 
-const NAV_ITEMS = ["Tech Stack", "About", "Skills", "Projects", "Certifications", "Contact"] as const;
+const NAV_ITEMS = ["Tech Stack", "About", "Experience", "Skills", "Projects", "Certifications", "Contact"] as const;
 
 const TECH_STACK = [
   { name: "Python", icon: "🐍", category: "Language" },
@@ -500,15 +500,12 @@ function Hero() {
           transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
           className="mb-8 flex justify-center"
         >
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/40 to-teal-500/40 rounded-full blur-md scale-110" />
-            <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-primary/30 shadow-xl shadow-primary/10">
-              <img
-                src="/profile.jpg"
-                alt="Sena Erdem"
-                className="w-full h-full object-cover"
-              />
-            </div>
+          <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-border bg-secondary">
+            <img
+              src="/profile.jpg"
+              alt="Sena Erdem"
+              className="w-full h-full object-cover"
+            />
           </div>
         </motion.div>
 
@@ -649,6 +646,81 @@ function TechStack() {
             </div>
           </motion.div>
         ))}
+      </div>
+    </Section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  EXPERIENCE                                                         */
+/* ------------------------------------------------------------------ */
+
+function Experience() {
+  return (
+    <Section id="experience">
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-8 h-1 bg-primary rounded-full" />
+        <span className="text-primary text-sm font-semibold uppercase tracking-wider">
+          Experience
+        </span>
+      </div>
+      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+        Professional Experience
+      </h2>
+      <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
+        Real-world data analytics experience gained through a project-focused internship.
+      </p>
+
+      <div className="max-w-3xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.5 }}
+          className="relative rounded-2xl border border-border bg-card/50 p-6 sm:p-8 hover:border-primary/20 transition-all duration-300"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-5">
+            <div>
+              <h3 className="text-lg font-bold">Data Analyst Intern</h3>
+              <div className="text-primary font-medium text-sm">GLP Software</div>
+            </div>
+            <div className="text-right shrink-0">
+              <div className="text-sm font-medium">08/2025 &ndash; 01/2026</div>
+              <div className="text-xs text-muted-foreground">Warsaw, Poland</div>
+            </div>
+          </div>
+
+          <ul className="space-y-3">
+            {[
+              "Completed a structured internship focused on end-to-end data analysis, including data collection, data cleaning, exploratory data analysis (EDA), and data visualization",
+              "Performed data preprocessing and cleaning using Python (Pandas, NumPy) to ensure data quality and consistency",
+              "Conducted exploratory data analysis (EDA) to identify trends, correlations, and key performance drivers across datasets",
+              "Developed interactive dashboards and visualizations using Power BI, Matplotlib, and Seaborn to communicate insights to stakeholders",
+              "Applied data modeling and DAX calculations in Power BI to enable KPI tracking, filtering, and dynamic reporting",
+              "Delivered actionable insights and recommendations to support data-driven decision-making",
+            ].map((item, i) => (
+              <motion.li
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: i * 0.08 }}
+                className="flex gap-3 text-sm text-muted-foreground leading-relaxed"
+              >
+                <span className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-primary/60" />
+                {item}
+              </motion.li>
+            ))}
+          </ul>
+
+          <div className="flex flex-wrap gap-1.5 mt-6 pt-5 border-t border-border">
+            {["Python", "Pandas", "NumPy", "Power BI", "DAX", "Matplotlib", "Seaborn"].map((t) => (
+              <Badge key={t} variant="secondary" className="text-xs font-normal">
+                {t}
+              </Badge>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </Section>
   );
@@ -1025,6 +1097,7 @@ export default function PortfolioPage() {
         <Hero />
         <TechStack />
         <About />
+        <Experience />
         <Skills />
         <Projects />
         <Certifications />
