@@ -102,16 +102,17 @@ const PROJECTS = [
     images: ["/dashboards/olist_page1.png", "/dashboards/olist_page2.png"],
   },
   {
-    title: "FAST-LI Search Data Analysis",
+    title: "Remote Work Health Impact — EDA",
     description:
-      "Explored and analyzed the FAST-LI search dataset using Jupyter Notebooks. Performed data exploration, preprocessing, and visualization to uncover patterns and insights from the search data.",
-    tech: ["Python", "Jupyter Notebook", "Pandas", "Matplotlib"],
-    highlights: ["Jupyter Notebook", "Data exploration", "Visualization"],
-    github: "https://github.com/senaerdemm2/fastli-search-data",
-    icon: TrendingUp,
-    color: "from-amber-500/20 to-orange-500/20",
+      "Comprehensive exploratory data analysis on post-pandemic remote work health impact (2025) with statistical validation. Investigated correlations between remote work patterns and employee wellbeing metrics.",
+    tech: ["Python", "Pandas", "Matplotlib", "Seaborn"],
+    highlights: ["Statistical validation", "2025 dataset", "Health & wellbeing focus"],
+    github: "https://github.com/senaerdemm2/remote-work-health-analysis",
+    icon: Brain,
+    color: "from-rose-500/20 to-pink-500/20",
     images: [],
   },
+
   {
     title: "Global Superstore — Power BI Dashboard",
     description:
@@ -129,17 +130,7 @@ const PROJECTS = [
       "/dashboards/global_drillthrough.png",
     ],
   },
-  {
-    title: "Remote Work Health Impact — EDA",
-    description:
-      "Comprehensive exploratory data analysis on post-pandemic remote work health impact (2025) with statistical validation. Investigated correlations between remote work patterns and employee wellbeing metrics.",
-    tech: ["Python", "Pandas", "Matplotlib", "Seaborn"],
-    highlights: ["Statistical validation", "2025 dataset", "Health & wellbeing focus"],
-    github: "https://github.com/senaerdemm2/remote-work-health-analysis",
-    icon: Brain,
-    color: "from-rose-500/20 to-pink-500/20",
-    images: [],
-  },
+ 
   {
     title: "Power BI Sales Dashboard",
     description:
@@ -149,6 +140,17 @@ const PROJECTS = [
     github: "https://github.com/senaerdemm2/powerBI_sales_dashboard",
     icon: BarChart3,
     color: "from-sky-500/20 to-indigo-500/20",
+    images: [],
+  },
+   {
+    title: "FAST-LI Search Data Analysis",
+    description:
+      "Explored and analyzed the FAST-LI search dataset using Jupyter Notebooks. Performed data exploration, preprocessing, and visualization to uncover patterns and insights from the search data.",
+    tech: ["Python", "Jupyter Notebook", "Pandas", "Matplotlib"],
+    highlights: ["Jupyter Notebook", "Data exploration", "Visualization"],
+    github: "https://github.com/senaerdemm2/fastli-search-data",
+    icon: TrendingUp,
+    color: "from-amber-500/20 to-orange-500/20",
     images: [],
   },
 ];
