@@ -529,11 +529,10 @@ function Hero() {
           transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
           className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
         >
-          Junior Data Analyst based in{" "}
+                    Junior Data Analyst in{" "}
           <span className="text-foreground font-medium">Warsaw, Poland</span>.{" "}
-          I turn raw data into{" "}
-          <span className="text-primary font-medium">actionable business insights</span>{" "}
-          using Python, SQL, and Power BI.
+          I{"'"}m passionate about making sense of data and helping businesses see the full picture with{" "}
+          <span className="text-primary font-medium">Python, SQL, and Power BI</span>.
         </motion.p>
 
         <motion.div
