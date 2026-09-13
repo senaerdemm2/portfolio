@@ -88,7 +88,7 @@ const PROJECTS = [
     github: "https://github.com/senaerdemm2/it-support-ticket-analysis",
     icon: Target,
     color: "from-emerald-500/20 to-teal-500/20",
-    images: ["/dashboards/it_support_ticket_dashboard.png"],
+    images: ["it-support-project/it_support_ticket_dashboard.png"],
   },
   {
     title: "Student Support Programs — What Actually Works?",
