@@ -79,6 +79,17 @@ const SKILL_CATEGORIES = [
 ];
 
 const PROJECTS = [
+    {
+    title: "IT Support Ticket Analysis — Automated Dashboard",
+    description:
+      "Analyzed IT support tickets using SQL and built an automated weekly dashboard report with Power BI and Power Automate. Turned raw ticket data into actionable insights for the support team.",
+    tech: ["SQL", "Power BI", "Power Automate"],
+    highlights: ["Automated weekly reporting", "SQL analysis", "Power BI dashboard"],
+    github: "https://github.com/senaerdemm2/it-support-ticket-analysis",
+    icon: Target,
+    color: "from-emerald-500/20 to-teal-500/20",
+    images: ["/dashboards/it_support_ticket_dashboard.png"],
+  },
   {
     title: "Student Support Programs — What Actually Works?",
     description:
