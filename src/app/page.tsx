@@ -542,7 +542,7 @@ function Hero() {
           className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
         >
                     Junior Data Analyst in{" "}
-          <span className="text-foreground font-medium">Warsaw, Poland</span>.{" "}
+          <span className="text-foreground font-medium">Poland</span>.{" "}
           I{"'"}m passionate about making sense of data and helping businesses see the full picture with{" "}
           <span className="text-primary font-medium">Python, SQL, and Power BI</span>.
         </motion.p>
@@ -838,15 +838,11 @@ function Skills() {
             <h3 className="font-semibold text-sm mb-6 text-foreground/90">
               {cat.title}
             </h3>
-            <div className="space-y-5">
+            <div className="flex flex-wrap gap-2">
               {cat.skills.map((skill) => (
-                <div key={skill.name}>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-muted-foreground">{skill.name}</span>
-                    <span className="text-primary font-semibold tabular-nums">{skill.level}%</span>
-                  </div>
-                  <Progress value={skill.level} className="h-2 bg-secondary" />
-                </div>
+                <Badge key={skill.name} variant="secondary" className="text-xs">
+                  {skill.name}
+                </Badge>
               ))}
             </div>
           </motion.div>
