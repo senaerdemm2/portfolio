@@ -805,9 +805,8 @@ function About() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  SKILLS                                                             */
-/* ------------------------------------------------------------------ */
-
+/* TECHNICAL SKILLS                                                             */
+/* ------------------------------------------------------------------ *
 function Skills() {
   return (
     <Section id="skills">
@@ -818,14 +817,13 @@ function Skills() {
         </span>
       </div>
       <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-        Proficiency Levels
+        Technical Skills
       </h2>
       <p className="text-muted-foreground max-w-2xl mb-12 leading-relaxed">
-        A comprehensive set of tools and methodologies I use to transform raw data
-        into clear, actionable business insights.
+        Tools and technologies I use to analyze data, build dashboards, automate reporting, and generate business insights.
       </p>
 
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-3 gap-6">
         {SKILL_CATEGORIES.map((cat, ci) => (
           <motion.div
             key={cat.title}
@@ -833,16 +831,19 @@ function Skills() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6, delay: ci * 0.15 }}
-            className="rounded-2xl border border-border bg-card/50 p-6 hover:border-primary/20 transition-colors"
+            className="rounded-xl border border-border bg-card/50 p-5 hover:border-primary/20 transition-colors"
           >
-            <h3 className="font-semibold text-sm mb-6 text-foreground/90">
+            <h3 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground/60 mb-5">
               {cat.title}
             </h3>
-            <div className="flex flex-wrap gap-2">
-              {cat.skills.map((skill) => (
-                <Badge key={skill.name} variant="secondary" className="text-xs">
-                  {skill.name}
-                </Badge>
+            <div className="space-y-4">
+              {cat.items.map((item, ii) => (
+                <div key={item.name}>
+                  <div className="font-semibold text-sm text-foreground/90 mb-1">{item.name}</div>
+                  {item.details.split("\n").map((line, li) => (
+                    <div key={li} className="text-xs text-muted-foreground leading-relaxed">{line}</div>
+                  ))}
+                </div>
               ))}
             </div>
           </motion.div>
