@@ -51,31 +51,32 @@ const TECH_STACK = [
   { name: "Git", icon: "📦", category: "Tool" },
 ];
 
-const SKILL_CATEGORIES = [
-  {
-    title: "Programming & Query Languages",
-    skills: [
-      { name: "Python (Pandas, NumPy, SciPy, Scikit-Learn)", level: 90 },
-      { name: "SQL (PostgreSQL, SQL Server)", level: 92 },
-      { name: "DAX (Power BI)", level: 80 },
-    ],
-  },
+const SKILL_CATEGORIES = [ 
   {
     title: "Data Visualization & BI",
     skills: [
-      { name: "Power BI", level: 88 },
-      { name: "Excel (Pivot Tables, Power Query, VBA)", level: 85 },
-      { name: "Matplotlib / Seaborn", level: 82 },
+      { name: "Power BI", details: "DAX · Power Query · Data Modeling · KPI Dashboards · Drill-Through" },
+      { name: "Excel", details: "PivotTables · Formulas · Data Analysis" },
+      { name: "Power Automate", details: "Automated Reporting · Scheduled Flows" },
     ],
   },
   {
-    title: "Analytics & Methods",
+    title: "SQL & Databases",
     skills: [
-      { name: "Statistical Analysis & Hypothesis Testing", level: 85 },
-      { name: "Exploratory Data Analysis (EDA)", level: 90 },
-      { name: "KPI Analysis & Business Intelligence", level: 84 },
+      { name: "SQL", details: "CTEs · JOINs · Aggregations · CASE WHEN" },
+      { name: "PostgreSQL", details: "Data Analysis · Data Preparation · Validation" },
+      { name: "SQL Server", details: "Queries · Data Analysis" },
     ],
   },
+  {
+    title: "Python & Analytics",
+    skills: [
+      { name: "Python", details: "Pandas · NumPy · SciPy · Scikit-Learn" },
+      { name: "Data Analysis", details: "EDA · Data Cleaning · Data Validation" },
+      { name: "Visualization", details: "Matplotlib · Seaborn · Plotly" },
+    ],
+  },
+ 
 ];
 
 const PROJECTS = [
