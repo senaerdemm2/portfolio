@@ -1,0 +1,254 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Tech accent colors */
+  --color-glow-cyan: var(--glow-cyan);
+  --color-glow-blue: var(--glow-blue);
+  --color-glow-violet: var(--glow-violet);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* === DARK THEME IS THE DEFAULT (tech aesthetic) === */
+  /* Deep navy/black background with subtle blue tint */
+  --background: oklch(0.13 0.025 250);
+  --foreground: oklch(0.97 0.005 250);
+
+  --card: oklch(0.17 0.03 250);
+  --card-foreground: oklch(0.97 0.005 250);
+
+  --popover: oklch(0.17 0.03 250);
+  --popover-foreground: oklch(0.97 0.005 250);
+
+  /* Bright cyan-blue primary — tech vibe */
+  --primary: oklch(0.72 0.16 215);
+  --primary-foreground: oklch(0.13 0.025 250);
+
+  --secondary: oklch(0.22 0.035 250);
+  --secondary-foreground: oklch(0.97 0.005 250);
+
+  --muted: oklch(0.20 0.025 250);
+  --muted-foreground: oklch(0.70 0.015 250);
+
+  --accent: oklch(0.25 0.05 250);
+  --accent-foreground: oklch(0.85 0.10 215);
+
+  --destructive: oklch(0.65 0.20 25);
+
+  --border: oklch(0.25 0.02 250 / 0.5);
+  --input: oklch(0.25 0.02 250 / 0.7);
+  --ring: oklch(0.72 0.16 215);
+
+  /* Chart colors */
+  --chart-1: oklch(0.72 0.16 215);
+  --chart-2: oklch(0.68 0.18 280);
+  --chart-3: oklch(0.75 0.14 180);
+  --chart-4: oklch(0.70 0.18 30);
+  --chart-5: oklch(0.65 0.20 350);
+
+  --sidebar: oklch(0.17 0.03 250);
+  --sidebar-foreground: oklch(0.97 0.005 250);
+  --sidebar-primary: oklch(0.72 0.16 215);
+  --sidebar-primary-foreground: oklch(0.13 0.025 250);
+  --sidebar-accent: oklch(0.25 0.05 250);
+  --sidebar-accent-foreground: oklch(0.85 0.10 215);
+  --sidebar-border: oklch(0.25 0.02 250 / 0.5);
+  --sidebar-ring: oklch(0.72 0.16 215);
+
+  /* Glow accent colors for tech effects */
+  --glow-cyan: oklch(0.75 0.18 200);
+  --glow-blue: oklch(0.65 0.18 250);
+  --glow-violet: oklch(0.65 0.20 290);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv01", "cv02";
+    /* Subtle noise texture for tech feel */
+    background-image:
+      radial-gradient(circle at 1px 1px, oklch(1 0 0 / 0.015) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* === Custom tech animations === */
+
+@keyframes grid-pulse {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.30; }
+}
+
+@keyframes orb-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.1); }
+  66% { transform: translate(-30px, 40px) scale(0.95); }
+}
+
+@keyframes orb-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-50px, 30px) scale(1.05); }
+  66% { transform: translate(30px, -50px) scale(1.15); }
+}
+
+@keyframes orb-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(60px, 60px) scale(1.2); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes fade-up {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px oklch(0.72 0.16 215 / 0.3), 0 0 40px oklch(0.72 0.16 215 / 0.15); }
+  50% { box-shadow: 0 0 30px oklch(0.72 0.16 215 / 0.5), 0 0 60px oklch(0.72 0.16 215 / 0.25); }
+}
+
+.animate-grid-pulse { animation: grid-pulse 4s ease-in-out infinite; }
+.animate-orb-1 { animation: orb-drift-1 20s ease-in-out infinite; }
+.animate-orb-2 { animation: orb-drift-2 25s ease-in-out infinite; }
+.animate-orb-3 { animation: orb-drift-3 30s ease-in-out infinite; }
+.animate-blink { animation: blink 1s steps(2) infinite; }
+.animate-fade-up { animation: fade-up 0.6s ease-out both; }
+.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+
+/* Tech background: animated grid */
+.tech-grid-bg {
+  background-image:
+    linear-gradient(to right, oklch(0.72 0.16 215 / 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.72 0.16 215 / 0.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Stronger grid for visible tech effect */
+.tech-grid-bg-strong {
+  background-image:
+    linear-gradient(to right, oklch(0.72 0.16 215 / 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.72 0.16 215 / 0.18) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.tech-dot-bg {
+  background-image: radial-gradient(circle, oklch(0.72 0.16 215 / 0.2) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Glow text effect for headings */
+.tech-glow-text {
+  text-shadow:
+    0 0 20px oklch(0.72 0.16 215 / 0.4),
+    0 0 40px oklch(0.72 0.16 215 / 0.2);
+}
+
+/* Card glow on hover */
+.tech-card-glow {
+  transition: all 0.3s ease;
+  position: relative;
+}
+.tech-card-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, oklch(0.72 0.16 215 / 0.4), transparent 50%, oklch(0.65 0.20 290 / 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.tech-card-glow:hover::before {
+  opacity: 1;
+}
+.tech-card-glow:hover {
+  box-shadow: 0 0 30px oklch(0.72 0.16 215 / 0.15);
+  transform: translateY(-2px);
+}
+
+/* Glow button */
+.tech-btn-glow {
+  position: relative;
+  overflow: hidden;
+}
+.tech-btn-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+.tech-btn-glow:hover::after {
+  transform: translateX(100%);
+}
+
+/* Terminal-style code badge */
+.tech-badge {
+  font-family: var(--font-geist-mono), monospace;
+  background: linear-gradient(135deg, oklch(0.20 0.04 250 / 0.8), oklch(0.25 0.05 290 / 0.5));
+  border: 1px solid oklch(0.72 0.16 215 / 0.3);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.05);
+}
